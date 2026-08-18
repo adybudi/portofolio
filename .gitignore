@@ -21,6 +21,7 @@
 /vendor
 plan
 memory
+.agents
 Homestead.json
 Homestead.yaml
 Thumbs.db
