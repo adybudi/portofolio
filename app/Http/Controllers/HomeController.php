@@ -165,6 +165,9 @@ class HomeController extends Controller
         }
 
         $fullPath = public_path($cvPath);
+        if (!file_exists($fullPath) && Storage::disk('public')->exists($cvPath)) {
+            $fullPath = Storage::disk('public')->path($cvPath);
+        }
 
         if (!file_exists($fullPath)) {
             return back()->with('error', 'Berkas CV belum diunggah oleh administrator.');

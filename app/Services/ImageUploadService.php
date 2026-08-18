@@ -22,11 +22,11 @@ class ImageUploadService
     ];
 
     /**
-     * Store an uploaded image safely on the 'public' disk.
+     * Store an uploaded image safely on the 'public' disk and sync to public_path.
      *
      * @param UploadedFile $file
      * @param string $subdir
-     * @return string Relative path stored in public disk (e.g. 'uploads/galleries/uuid.webp')
+     * @return string Relative path stored (e.g. 'uploads/portfolios/uuid.webp')
      */
     public static function store(UploadedFile $file, string $subdir): string
     {
@@ -49,11 +49,26 @@ class ImageUploadService
         $filename = Str::uuid()->toString() . '.' . $ext;
 
         // 4. Save using explicit Storage::disk('public')
-        return $file->storeAs($folderPath, $filename, 'public');
+        $storedPath = $file->storeAs($folderPath, $filename, 'public');
+
+        // 5. Shared Hosting Sync (Direct copy to public_path for environments without symlink)
+        try {
+            $targetDir = public_path($folderPath);
+            if (!file_exists($targetDir)) {
+                @mkdir($targetDir, 0755, true);
+            }
+            if (file_exists($file->getRealPath())) {
+                @copy($file->getRealPath(), $targetDir . '/' . $filename);
+            }
+        } catch (\Throwable $e) {
+            // Continue gracefully if public_path copy is restricted
+        }
+
+        return $storedPath;
     }
 
     /**
-     * Safely delete a file from Storage::disk('public') or legacy public_path.
+     * Safely delete a file from Storage::disk('public') and public_path.
      *
      * @param string|null $path
      */
@@ -73,7 +88,7 @@ class ImageUploadService
             Storage::disk('public')->delete($path);
         }
 
-        // Backward compatibility: If stored in public_path('uploads/...')
+        // Delete from direct public_path('uploads/...')
         if (Str::startsWith($path, 'uploads/') && file_exists(public_path($path))) {
             @unlink(public_path($path));
         }
@@ -108,20 +123,30 @@ class ImageUploadService
             }
         }
 
-        // Internal GD / getimagesize verification to detect fake MIMEs
+        // Internal image inspection (GD getimagesize + finfo fallback)
         $imageInfo = @getimagesize($file->getRealPath());
         if ($imageInfo === false) {
-            throw new \InvalidArgumentException('File yang diunggah bukan berkas gambar yang valid (fake MIME atau file corrupt).');
-        }
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $detectedMime = $finfo->file($file->getRealPath());
+            if (!in_array($detectedMime, ['image/jpeg', 'image/png', 'image/webp'], true)) {
+                throw new \InvalidArgumentException('File yang diunggah bukan berkas gambar yang valid (fake MIME atau file corrupt).');
+            }
+        } else {
+            $validTypes = [IMAGETYPE_JPEG, IMAGETYPE_PNG];
+            if (defined('IMAGETYPE_WEBP')) {
+                $validTypes[] = IMAGETYPE_WEBP;
+            } else {
+                $validTypes[] = 18; // IMAGETYPE_WEBP fallback constant
+            }
 
-        $validTypes = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
-        if (!in_array($imageInfo[2], $validTypes, true)) {
-            throw new \InvalidArgumentException('Format internal gambar tidak didukung. Hanya JPEG, PNG, dan WEBP yang diizinkan.');
-        }
+            if (!in_array($imageInfo[2], $validTypes, true)) {
+                throw new \InvalidArgumentException('Format internal gambar tidak didukung. Hanya JPEG, PNG, dan WEBP yang diizinkan.');
+            }
 
-        // Dimension Bounds Verification
-        if ($imageInfo[0] < 10 || $imageInfo[1] < 10 || $imageInfo[0] > 6000 || $imageInfo[1] > 6000) {
-            throw new \InvalidArgumentException('Dimensi gambar di luar batas yang diizinkan (minimal 10x10px, maksimal 6000x6000px).');
+            // Dimension Bounds Verification (at least 1x1px, max 6000x6000px)
+            if ($imageInfo[0] < 1 || $imageInfo[1] < 1 || $imageInfo[0] > 6000 || $imageInfo[1] > 6000) {
+                throw new \InvalidArgumentException('Dimensi gambar di luar batas yang diizinkan (maksimal 6000x6000px).');
+            }
         }
     }
 
@@ -134,12 +159,14 @@ class ImageUploadService
             return asset($fallback);
         }
 
-        if (Storage::disk('public')->exists($path)) {
-            return Storage::disk('public')->url($path);
-        }
-
+        // 1. Direct public_path check (works even without storage:link symlink)
         if (file_exists(public_path($path))) {
             return asset($path);
+        }
+
+        // 2. Storage disk public check
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->url($path);
         }
 
         return asset($fallback);
