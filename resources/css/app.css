@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --deep-twilight: #03045e;
+    --french-blue: #023e8a;
+    --bright-teal-blue: #0077b6;
+    --blue-green: #0096c7;
+    --turquoise-surf: #00b4d8;
+    --sky-aqua: #48cae4;
+    --frosted-blue: #90e0ef;
+    --frosted-blue-2: #ade8f4;
+    --light-cyan: #caf0f8;
+}
+
+html {
+    scroll-behavior: smooth;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.font-display {
+    font-family: 'Bebas Neue', 'Syne', sans-serif;
+    letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   Minimalist Light Mode (Default)
+   ========================================================================== */
+html[data-theme="light"], html:not(.dark) {
+    background-color: #f7f8f9;
+    color: #1a1d20;
+}
+
+html[data-theme="light"] body {
+    background-color: #f7f8f9;
+    color: #1a1d20;
+}
+
+html[data-theme="light"] .editorial-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.03);
+}
+
+html[data-theme="light"] .editorial-nav {
+    background-color: rgba(247, 248, 249, 0.92);
+    border-bottom: 1px solid #e2e8f0;
+}
+
+html[data-theme="light"] .text-heading {
+    color: #111827;
+}
+
+html[data-theme="light"] .text-subtext {
+    color: #4b5563;
+}
+
+html[data-theme="light"] .section-banner {
+    background-color: #edeef1;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* ==========================================================================
+   Minimalist Dark Mode
+   ========================================================================== */
+html[data-theme="dark"], html.dark, body.dark {
+    background-color: #0b0f17;
+    color: #e5e7eb;
+}
+
+html[data-theme="dark"] .editorial-card {
+    background-color: #131924;
+    border: 1px solid #1f293d;
+    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .editorial-nav {
+    background-color: rgba(11, 15, 23, 0.92);
+    border-bottom: 1px solid #1f293d;
+}
+
+html[data-theme="dark"] .text-heading {
+    color: #ffffff;
+}
+
+html[data-theme="dark"] .text-subtext {
+    color: #9ca3af;
+}
+
+html[data-theme="dark"] .section-banner {
+    background-color: #111622;
+    border-top: 1px solid #1f293d;
+    border-bottom: 1px solid #1f293d;
+}
+
+/* Editorial Minimalist Accent Line & Badges */
+.accent-line {
+    width: 2.5rem;
+    height: 3px;
+    background-color: var(--blue-green);
+    border-radius: 9999px;
+}
+
+.editorial-card-hover {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.editorial-card-hover:hover {
+    transform: translateY(-4px);
+    border-color: var(--blue-green);
+}
+
+/* ==========================================================================
+   Global Consistent Form Inputs
+   ========================================================================== */
+.input-theme {
+    background-color: #ffffff;
+    color: #111827;
+    border: 1px solid #cbd5e1;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+html[data-theme="dark"] .input-theme, html.dark .input-theme {
+    background-color: #0d121d;
+    color: #f3f4f6;
+    border: 1px solid #1f293d;
+}
+
+.input-theme::placeholder {
+    color: #9ca3af;
+}
+
+html[data-theme="dark"] .input-theme::placeholder, html.dark .input-theme::placeholder {
+    color: #6b7280;
+}
+
+.input-theme:focus {
+    outline: none;
+    border-color: #0096c7;
+    box-shadow: 0 0 0 2px rgba(0, 150, 199, 0.25);
+}
