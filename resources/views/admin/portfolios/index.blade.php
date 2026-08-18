@@ -30,7 +30,7 @@
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
                                 <td class="p-4 hidden md:table-cell">
                                     @if($item->image_path)
-                                        <img src="{{ asset($item->image_path) }}" alt="{{ $item->title }}" loading="lazy" class="w-12 h-12 object-cover border border-slate-300 dark:border-slate-700" />
+                                        <img src="{{ uploaded_asset($item->image_path) }}" alt="{{ $item->title }}" loading="lazy" class="w-12 h-12 object-cover border border-slate-300 dark:border-slate-700" />
                                     @else
                                         <div class="w-12 h-12 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-subtext text-[10px]">
                                             No img

@@ -1,17 +1,16 @@
-<x-layouts.admin title="Konfirmasi Import Backup Data">
-    <x-slot name="header">Konfirmasi Import Backup Data</x-slot>
+<x-layouts.admin title="Konfirmasi Import Backup" header="Konfirmasi Import Backup Data">
 
     <div class="max-w-2xl mx-auto space-y-6">
         
         <div class="flex items-center justify-between">
-            <a href="{{ route('admin.settings.index') }}" class="text-xs uppercase font-extrabold text-[#0096c7] hover:underline flex items-center gap-1">
-                <span>← Batal & Kembali ke Pengaturan</span>
+            <a href="{{ route('admin.settings.index') }}" class="text-xs uppercase font-extrabold tracking-wider text-subtext hover:text-heading transition-colors">
+                ← Batal & Kembali ke Pengaturan
             </a>
         </div>
 
-        <div class="bg-white dark:bg-[#131924] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-6 shadow-xl">
+        <div class="editorial-card p-6 sm:p-8 space-y-6 shadow-2xl">
             <div class="border-b border-amber-500/30 pb-4">
-                <span class="px-2.5 py-1 bg-amber-500/10 border border-amber-500/40 text-amber-600 dark:text-amber-400 text-[10px] font-mono font-bold uppercase inline-flex items-center gap-1">
+                <span class="px-2.5 py-1 bg-amber-500/15 border border-amber-500/40 text-amber-600 dark:text-amber-400 text-[10px] font-mono font-bold uppercase inline-flex items-center gap-1">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     <span>Konfirmasi Prosedur Import Destruktif</span>
                 </span>
@@ -84,20 +83,20 @@
                 @csrf
 
                 <div>
-                    <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-1">
+                    <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">
                         Masukkan Password Admin Anda untuk Konfirmasi *
                     </label>
-                    <input type="password" name="password" required placeholder="Password Akun Admin" class="w-full px-4 py-3 input-theme text-xs font-mono">
+                    <input type="password" name="password" required placeholder="Password Akun Admin" class="input input-theme w-full rounded-none text-xs font-mono">
                     @error('password')
-                        <span class="text-[10px] text-rose-500 mt-1 block font-mono font-bold">{{ $message }}</span>
+                        <span class="text-xs text-rose-500 mt-1 block font-mono font-bold">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-800">
-                    <a href="{{ route('admin.settings.index') }}" class="px-5 py-2.5 border border-slate-300 dark:border-slate-700 text-subtext hover:text-heading text-xs font-mono font-bold uppercase">
+                <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
+                    <a href="{{ route('admin.settings.index') }}" class="px-6 py-3 border border-slate-300 dark:border-slate-700 text-subtext hover:text-heading text-xs uppercase font-extrabold tracking-wider transition-colors">
                         Batal
                     </a>
-                    <button type="submit" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold uppercase tracking-widest transition-all shadow-md">
+                    <button type="submit" class="px-8 py-3 bg-rose-600 hover:bg-rose-700 text-white text-xs uppercase font-extrabold tracking-wider transition-all shadow-md">
                         Konfirmasi & Proses Import Database →
                     </button>
                 </div>

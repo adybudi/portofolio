@@ -59,7 +59,7 @@
                     <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Thumbnail Proyek</label>
                     @if($portfolio->image_path)
                         <div class="mb-3 flex items-center gap-4">
-                            <img src="{{ asset($portfolio->image_path) }}" alt="{{ $portfolio->title }}" class="w-20 h-20 object-cover border border-slate-300 dark:border-slate-700" />
+                            <img src="{{ uploaded_asset($portfolio->image_path) }}" alt="{{ $portfolio->title }}" class="w-20 h-20 object-cover border border-slate-300 dark:border-slate-700" />
                             <span class="text-xs text-subtext">Gambar saat ini. Upload file baru di bawah jika ingin mengganti.</span>
                         </div>
                     @endif
