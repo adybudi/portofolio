@@ -97,12 +97,11 @@ class ServiceController extends Controller
             'order'          => 'nullable|integer',
         ]);
 
-        $oldImagePath = $service->image;
-        $newImagePath = $oldImagePath;
-
-        if ($request->hasFile('image')) {
-            $newImagePath = ImageUploadService::store($request->file('image'), 'services');
-        }
+        $imagePath = ImageUploadService::update(
+            $request->file('image'),
+            'services',
+            $service->image
+        );
 
         $features = collect($validated['features'] ?? [])->filter()->values()->toArray();
 
@@ -112,15 +111,11 @@ class ServiceController extends Controller
             'price'          => $validated['price'] ?? null,
             'has_discount'   => $request->has('has_discount'),
             'discount_price' => $validated['discount_price'] ?? null,
-            'image'          => $newImagePath,
+            'image'          => $imagePath,
             'features'       => !empty($features) ? $features : null,
             'is_active'      => $request->has('is_active'),
             'order'          => $validated['order'] ?? 0,
         ]);
-
-        if ($request->hasFile('image') && $oldImagePath && $oldImagePath !== $newImagePath) {
-            ImageUploadService::delete($oldImagePath);
-        }
 
         return redirect()->route('admin.services.index')->with('success', 'Jasa berhasil diperbarui.');
     }

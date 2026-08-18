@@ -68,25 +68,20 @@ class ToolController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        $oldIconPath = $tool->icon_path;
-        $newIconPath = $oldIconPath;
-
-        if ($request->hasFile('icon')) {
-            $newIconPath = ImageUploadService::store($request->file('icon'), 'tools');
-        }
+        $iconPath = ImageUploadService::update(
+            $request->file('icon'),
+            'tools',
+            $tool->icon_path
+        );
 
         $tool->update([
             'name' => $validated['name'],
             'category' => $validated['category'],
             'description' => $validated['description'],
             'url' => $validated['url'],
-            'icon_path' => $newIconPath,
+            'icon_path' => $iconPath,
             'is_active' => $request->has('is_active'),
         ]);
-
-        if ($request->hasFile('icon') && $oldIconPath && $oldIconPath !== $newIconPath) {
-            ImageUploadService::delete($oldIconPath);
-        }
 
         return redirect()->route('admin.tools.index')->with('success', 'Tool updated successfully.');
     }

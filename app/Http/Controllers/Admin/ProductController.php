@@ -92,12 +92,11 @@ class ProductController extends Controller
             'order' => 'nullable|integer',
         ]);
 
-        $oldImagePath = $product->image_path;
-        $newImagePath = $oldImagePath;
-
-        if ($request->hasFile('image')) {
-            $newImagePath = ImageUploadService::store($request->file('image'), 'products');
-        }
+        $imagePath = ImageUploadService::update(
+            $request->file('image'),
+            'products',
+            $product->image_path
+        );
 
         $title = $validated['title'] ?? null;
 
@@ -107,14 +106,10 @@ class ProductController extends Controller
             'price' => $validated['price'] ?? null,
             'category' => $validated['category'] ?? null,
             'link' => $validated['link'] ?? null,
-            'image_path' => $newImagePath,
+            'image_path' => $imagePath,
             'is_active' => $request->has('is_active'),
             'order' => $validated['order'] ?? 0,
         ]);
-
-        if ($request->hasFile('image') && $oldImagePath && $oldImagePath !== $newImagePath) {
-            ImageUploadService::delete($oldImagePath);
-        }
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui.');
     }

@@ -82,7 +82,7 @@ class SettingController extends Controller
             }
         }
         if (empty($currentAvatars)) {
-            $currentAvatars = [Setting::get('hero_avatar', 'uploads/profile.png')];
+            $currentAvatars = [Setting::get('hero_avatar', 'uploads/profile.webp')];
         }
 
         if ($request->hasFile('avatars')) {
@@ -124,7 +124,7 @@ class SettingController extends Controller
         }
 
         if (empty($currentAvatars)) {
-            $currentAvatars = ['uploads/profile.png'];
+            $currentAvatars = ['uploads/profile.webp'];
         }
 
         Setting::set('hero_avatars', json_encode(array_values($currentAvatars)));
@@ -157,12 +157,20 @@ class SettingController extends Controller
         ]);
 
         if ($request->hasFile('cv_file')) {
+            $oldCv = Setting::get('cv_file_path');
             $file = $request->file('cv_file');
             $filename = 'cv_' . Str::uuid() . '.pdf';
             $path = $file->storeAs('uploads/cv', $filename, 'public');
+
+            try {
+                $publicCvDir = public_path('uploads/cv');
+                if (!file_exists($publicCvDir)) {
+                    @mkdir($publicCvDir, 0755, true);
+                }
+                @copy($file->getRealPath(), $publicCvDir . '/' . $filename);
+            } catch (\Throwable $e) {}
             
-            $oldCv = Setting::get('cv_file_path');
-            if ($oldCv) {
+            if ($oldCv && $oldCv !== $path) {
                 ImageUploadService::delete($oldCv);
             }
             

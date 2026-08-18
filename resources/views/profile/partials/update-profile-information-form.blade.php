@@ -41,7 +41,16 @@
                     @endif
                 </div>
             @endif
-        </div>
+        @if (session('status') === 'profile-updated')
+            <div x-data="{ show: true }" x-show="show" x-transition class="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Informasi profil Anda berhasil diperbarui!</span>
+                </div>
+                <button type="button" @click="show = false" class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 text-xs font-bold">✕</button>
+            </div>
+        @endif
+
         <div class="pt-2 flex justify-end">
             <button type="submit" class="px-8 py-3 bg-[#0096c7] hover:bg-[#0077b6] text-white text-xs uppercase font-extrabold tracking-wider rounded-none transition-all shadow-md">
                 {{ __('Save') }}

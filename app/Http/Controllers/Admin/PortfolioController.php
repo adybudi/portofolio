@@ -71,12 +71,11 @@ class PortfolioController extends Controller
             'is_featured' => 'nullable|boolean',
         ]);
 
-        $oldImagePath = $portfolio->image_path;
-        $newImagePath = $oldImagePath;
-
-        if ($request->hasFile('image')) {
-            $newImagePath = ImageUploadService::store($request->file('image'), 'portfolios');
-        }
+        $imagePath = ImageUploadService::update(
+            $request->file('image'),
+            'portfolios',
+            $portfolio->image_path
+        );
 
         $portfolio->update([
             'title' => $validated['title'],
@@ -84,13 +83,9 @@ class PortfolioController extends Controller
             'tech_stack' => $validated['tech_stack'] ?? null,
             'description' => $validated['description'],
             'project_url' => $validated['project_url'] ?? null,
-            'image_path' => $newImagePath,
+            'image_path' => $imagePath,
             'is_featured' => $request->has('is_featured'),
         ]);
-
-        if ($request->hasFile('image') && $oldImagePath && $oldImagePath !== $newImagePath) {
-            ImageUploadService::delete($oldImagePath);
-        }
 
         return redirect()->route('admin.portfolios.index')->with('success', 'Portfolio updated successfully.');
     }

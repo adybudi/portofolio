@@ -68,6 +68,32 @@ class ImageUploadService
     }
 
     /**
+     * Update an uploaded image: uploads new image first, then safely deletes old image.
+     *
+     * @param UploadedFile|null $newFile The new uploaded file (if any)
+     * @param string $subdir Target subdirectory
+     * @param string|null $oldPath Existing file path to replace
+     * @return string|null New path or existing path if no new file provided
+     */
+    public static function update(?UploadedFile $newFile, string $subdir, ?string $oldPath = null): ?string
+    {
+        // 1. If no new file is uploaded, keep the old file path
+        if (!$newFile) {
+            return $oldPath;
+        }
+
+        // 2. Store the new file first (ensures safe transactional replacement)
+        $newPath = self::store($newFile, $subdir);
+
+        // 3. If new file was stored successfully and old path exists, delete the old file
+        if (!empty($oldPath) && $oldPath !== $newPath) {
+            self::delete($oldPath);
+        }
+
+        return $newPath;
+    }
+
+    /**
      * Safely delete a file from Storage::disk('public') and public_path.
      *
      * @param string|null $path
