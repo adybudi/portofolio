@@ -95,7 +95,7 @@
 
             <!-- Modal Restore -->
             <div x-show="openRestoreModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" x-cloak>
-                <div class="editorial-card bg-white dark:bg-[#131924] p-6 sm:p-8 w-full max-w-md space-y-6 shadow-2xl">
+                <div x-show="openRestoreModal" x-cloak class="editorial-card bg-white dark:bg-[#131924] p-6 sm:p-8 w-full max-w-md space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800">
                     <div class="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-slate-800">
                         <h3 class="font-display text-xl font-bold uppercase text-heading">Restore Backup CMS JSON</h3>
                         <button @click="openRestoreModal = false" class="text-subtext hover:text-heading p-1">

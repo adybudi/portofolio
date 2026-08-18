@@ -143,3 +143,33 @@ html[data-theme="dark"] .input-theme::placeholder, html.dark .input-theme::place
     border-color: #0096c7;
     box-shadow: 0 0 0 2px rgba(0, 150, 199, 0.25);
 }
+
+/* Prevent Alpine.js Flash of Unstyled Content */
+[x-cloak] { display: none !important; }
+
+/* Cloudflare Turnstile Layout Alignment */
+.cf-turnstile {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    line-height: 0 !important;
+    font-size: 0 !important;
+    overflow: hidden !important;
+    background-color: transparent !important;
+    border: none !important;
+}
+
+.cf-turnstile > * {
+    background-color: transparent !important;
+}
+
+.cf-turnstile iframe {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    vertical-align: bottom !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}

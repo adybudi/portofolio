@@ -671,6 +671,11 @@
                                         @error('message') <span class="text-[10px] text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                                     </div>
 
+                                    @if(config('services.turnstile.enabled'))
+                                        <div class="cf-turnstile w-full my-3" data-sitekey="{{ config('services.turnstile.site_key') }}" data-size="flexible" data-theme="auto"></div>
+                                        @error('cf-turnstile-response') <span class="text-[10px] text-rose-500 mt-1 block font-mono">{{ $message }}</span> @enderror
+                                    @endif
+
                                     <div class="pt-2">
                                         <button type="submit" class="w-full py-3 bg-[#0096c7] hover:bg-[#0077b6] text-white text-xs uppercase font-extrabold tracking-wider transition-all shadow-md">
                                             KIRIM PESAN KONTAK →

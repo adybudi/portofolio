@@ -34,6 +34,13 @@
                 <span class="text-xs text-subtext font-medium">{{ __('Remember me') }}</span>
             </label>
         </div>
+
+        <!-- Cloudflare Turnstile Captcha -->
+        @if(config('services.turnstile.enabled'))
+            <div class="cf-turnstile w-full my-3" data-sitekey="{{ config('services.turnstile.site_key') }}" data-size="flexible" data-theme="auto"></div>
+            <x-input-error :messages="$errors->get('cf-turnstile-response')" class="mt-1 font-mono text-[10px]" />
+        @endif
+
         <!-- Actions -->
         <div class="flex flex-col gap-4 pt-2">
             <button type="submit" class="w-full px-6 py-3.5 bg-[#0096c7] hover:bg-[#0077b6] text-white text-xs uppercase tracking-widest font-bold rounded-none transition-all shadow-md">

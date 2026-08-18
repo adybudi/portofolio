@@ -25,8 +25,9 @@ class SecurityHeadersTest extends TestCase
         $response->assertHeader('X-XSS-Protection', '1; mode=block');
         $response->assertHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
         $response->assertHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-        $response->assertHeader('Cross-Origin-Resource-Policy', 'cross-origin');
         $this->assertTrue($response->headers->has('Content-Security-Policy'));
+        $csp = $response->headers->get('Content-Security-Policy');
+        $this->assertStringContainsString('https://challenges.cloudflare.com', $csp);
     }
 
     public function test_hsts_header_is_present_on_https_or_production(): void

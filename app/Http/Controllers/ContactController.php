@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
+use App\Rules\TurnstileRule;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -22,9 +23,15 @@ class ContactController extends Controller
             'email' => 'required|email|max:255',
             'subject' => 'nullable|string|max:255',
             'message' => 'required|string|max:2000',
+            'cf-turnstile-response' => [new TurnstileRule],
         ]);
 
-        ContactMessage::create($validated);
+        ContactMessage::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'subject' => $validated['subject'] ?? null,
+            'message' => $validated['message'],
+        ]);
 
         return back()->with('contact_success', 'Pesan Anda telah berhasil terkirim! Terima kasih telah menghubungi saya.');
     }
