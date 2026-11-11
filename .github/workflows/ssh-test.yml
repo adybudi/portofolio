@@ -1,0 +1,26 @@
+name: SSH Smoke Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ssh:
+    name: Test SSH connection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Connect to shared hosting
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            echo "Connected as: $(whoami)@$(hostname)"
+            cd "${{ secrets.DEPLOY_PATH }}"
+            pwd
+            git remote -v
+            git branch --show-current
+            git status -sb
