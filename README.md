@@ -1,59 +1,98 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Portofolio & Tools Hub — Ady Budisantika
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi portofolio interaktif + CMS admin berbasis **Laravel 12**, **Blade**, **Alpine.js**, **Tailwind CSS/DaisyUI**, dan **Vite**.
 
-## About Laravel
+## Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Landing page dinamis: hero gallery, about, statistik, jasa, portofolio, produk, tools, pengalaman, sertifikasi, dan form kontak.
+- CMS admin untuk seluruh konten (portofolio, produk, jasa, tools, pengalaman, sertifikasi, pesan, settings).
+- Upload gambar aman: validasi MIME/GD, nama UUID, anti path-traversal, dan pembersihan file lama.
+- Maintenance mode dengan bypass untuk admin.
+- Backup/import JSON non-destruktif (updateOrCreate, tidak menghapus data yang tidak ada di backup).
+- Cloudflare Turnstile (opsional) untuk form kontak, login, dan registrasi.
+- Hardening: security headers, rate limit kontak, honeypot, registrasi publik default OFF.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Kebutuhan
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP >= 8.2 (ekstensi GD, PDO)
+- Composer 2
+- Node.js + npm
+- MySQL/SQLite
 
-## Learning Laravel
+## Setup Lokal
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan storage:link
+npm install
+npm run build
+php artisan serve
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Untuk development dengan Vite + queue + log viewer:
 
-## Laravel Sponsors
+```bash
+composer run dev
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Membuat Admin
 
-### Premium Partners
+Cara yang disarankan (interaktif, tidak menyimpan password default):
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+php artisan admin:create
+```
 
-## Contributing
+Alternatif seeding non-interaktif: isi `ADMIN_SEED_EMAIL` dan `ADMIN_SEED_PASSWORD` di `.env`, lalu:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan db:seed
+```
 
-## Code of Conduct
+Seeder **tidak** mengubah admin yang sudah ada dan **tidak** menimpa setting yang sudah dikustomisasi. Tanpa `ADMIN_SEED_PASSWORD`, seeder melewati pembuatan admin di production.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Testing
 
-## Security Vulnerabilities
+```bash
+php artisan test
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Test menggunakan SQLite in-memory (`phpunit.xml`) dan tidak menulis ke folder `public/uploads`.
 
-## License
+## Build & Deploy
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan storage:link
+npm ci
+npm run build
+```
+
+Jika hosting memakai `public_html` di luar folder project, set `APP_PUBLIC_PATH` (path absolut atau relatif) di `.env`.
+
+## Struktur Singkat
+
+| Path | Keterangan |
+|---|---|
+| `app/Http/Controllers/HomeController.php` | Halaman publik & CV |
+| `app/Http/Controllers/Admin/*` | CMS admin |
+| `app/Models/Setting.php` | Setting key-value dengan cache + invalidasi |
+| `app/Services/ImageUploadService.php` | Upload & validasi gambar |
+| `app/Http/Middleware/CheckMaintenanceMode.php` | Maintenance mode |
+| `routes/web.php` | Routing publik & admin |
+| `resources/views/home.blade.php` | Landing page |
+| `resources/js/3d-effects.js` | Efek Three.js (hero) |
+
+## Keamanan
+
+- Registrasi publik hanya aktif jika setting CMS ON **dan** `ALLOW_PUBLIC_REGISTRATION_IN_PRODUCTION=true` (production).
+- Admin terakhir tidak dapat menghapus akunnya sendiri.
+- Backup/import dilindungi gate `manage-backup`, konfirmasi password, dan validasi path traversal.
+- Jangan commit `.env`, database dump, atau kredensial.

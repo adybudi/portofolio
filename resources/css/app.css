@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Solid primary surfaces use a darker cyan so white text meets WCAG AA (4.5:1). */
+.bg-\[\#0096c7\] {
+    background-color: #0077b6;
+}
+
+.hover\:bg-\[\#0077b6\]:hover {
+    background-color: #005f8f;
+}
+
 :root {
     --deep-twilight: #03045e;
     --french-blue: #023e8a;

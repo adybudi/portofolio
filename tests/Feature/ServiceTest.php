@@ -38,10 +38,12 @@ class ServiceTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Jasa Pembuatan Web Laravel');
         $response->assertSee('Fitur Responsif');
+        $response->assertSee('MULAI DARI');
 
         $homeResponse = $this->get(route('home'));
         $homeResponse->assertStatus(200);
         $homeResponse->assertSee('Jasa Pembuatan Web Laravel');
+        $homeResponse->assertSee('MULAI DARI');
     }
 
     public function test_admin_can_crud_service_items(): void

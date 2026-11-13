@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Banner Layanan B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --navy: #0b0f17;
+        --ink: #e5e7eb;
+        --muted: #94a3b8;
+        --cyan: #0096c7;
+        --cyan-soft: #48cae4;
+        --line: rgba(148, 163, 184, 0.16);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 1280px; height: 720px; overflow: hidden; background: var(--navy); }
+
+    .banner {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        background: var(--navy);
+        color: var(--ink);
+        font-family: "Plus Jakarta Sans", sans-serif;
+    }
+
+    .grid {
+        position: absolute; inset: 0;
+        background-image:
+            linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+        background-size: 64px 64px;
+    }
+
+    .stripe {
+        position: absolute;
+        top: -140px;
+        left: 730px;
+        width: 170px;
+        height: 1100px;
+        background: linear-gradient(180deg, rgba(0,150,199,0.30), rgba(0,150,199,0.03));
+        transform: rotate(18deg);
+    }
+
+    .glow {
+        position: absolute;
+        width: 700px; height: 700px; border-radius: 50%;
+        background: rgba(0, 150, 199, 0.18);
+        filter: blur(140px);
+        left: -260px; top: -220px;
+    }
+
+    .frame {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        padding: 56px 72px 44px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.24em;
+        text-transform: uppercase; color: var(--muted);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark { display: inline-flex; gap: 6px; color: var(--cyan-soft); font-size: 18px; letter-spacing: 0.18em; }
+    .brand-mark span:first-child { color: var(--cyan); }
+    .brand-divider { width: 1px; height: 18px; background: var(--line); }
+    .topbar strong { color: var(--cyan-soft); }
+
+    .main {
+        display: flex;
+        align-items: center;
+        gap: 56px;
+        flex: 1;
+        min-width: 0;
+        padding-top: 6px;
+    }
+
+    .number {
+        flex: 0 0 300px;
+        min-width: 0;
+        position: relative;
+    }
+    .number .big {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 300px;
+        line-height: 0.78;
+        color: transparent;
+        -webkit-text-stroke: 2px rgba(0, 150, 199, 0.55);
+        letter-spacing: 0.02em;
+    }
+    .number .label {
+        position: absolute;
+        left: 8px;
+        bottom: -4px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--cyan-soft);
+    }
+    .number .label::before {
+        content: "";
+        display: inline-block;
+        width: 28px;
+        height: 2px;
+        background: var(--cyan);
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+
+    .copy { flex: 1; min-width: 0; max-width: 780px; }
+    .eyebrow {
+        display: inline-flex; align-items: center; gap: 10px;
+        font-size: 10px; font-weight: 800; letter-spacing: 0.22em;
+        text-transform: uppercase; color: var(--cyan-soft); margin-bottom: 16px;
+    }
+    .eyebrow::before { content: ""; width: 34px; height: 2px; background: var(--cyan); }
+
+    h1 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 92px;
+        line-height: 0.84;
+        text-transform: uppercase;
+        color: #fff;
+        letter-spacing: 0.015em;
+    }
+    h1 .accent { color: var(--cyan-soft); }
+
+    .lead {
+        margin-top: 20px;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--muted);
+        max-width: 640px;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 26px;
+        margin-top: 28px;
+        max-width: 600px;
+    }
+    .feature {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+    .feature .num {
+        color: var(--cyan);
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 18px;
+        letter-spacing: 0.06em;
+    }
+    .feature .bar { flex: 1; height: 1px; background: var(--line); }
+
+    .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+    }
+    .footer .meta {
+        font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+        text-transform: uppercase; color: var(--muted); line-height: 1.7;
+    }
+    .footer .meta strong { color: var(--ink); }
+    .footer .stamp {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 30px; letter-spacing: 0.08em;
+        color: rgba(148, 163, 184, 0.5); text-transform: uppercase;
+    }
+    .footer .stamp span { color: var(--cyan); }
+</style>
+</head>
+<body>
+<div class="banner" role="img" aria-label="Banner Layanan Landing Page dan Company Profile B">
+    <div class="grid"></div>
+    <div class="stripe"></div>
+    <div class="glow"></div>
+
+    <div class="frame">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-mark"><span>A</span><span>/</span><span>B</span></div>
+                <div class="brand-divider"></div>
+                <div>Ady Budisantika</div>
+            </div>
+            <div>Service / <strong>01</strong></div>
+        </header>
+
+        <main class="main">
+            <div class="number" aria-hidden="true">
+                <div class="big">01</div>
+                <div class="label">Landing Page</div>
+            </div>
+
+            <div class="copy">
+                <div class="eyebrow">Jasa &amp; Layanan</div>
+                <h1>Company<br><span class="accent">Profile</span> &amp;<br>Landing Page</h1>
+                <p class="lead">
+                    Struktur konten yang jernih, identitas visual yang kuat, dan
+                    pengalaman mobile yang mulus — siap memperkenalkan bisnis Anda
+                    secara profesional.
+                </p>
+
+                <div class="features">
+                    <div class="feature"><span class="num">01</span><span>Desain Responsif</span><span class="bar"></span></div>
+                    <div class="feature"><span class="num">02</span><span>SEO On-Page</span><span class="bar"></span></div>
+                    <div class="feature"><span class="num">03</span><span>WhatsApp CTA</span><span class="bar"></span></div>
+                    <div class="feature"><span class="num">04</span><span>Optimasi WebP</span><span class="bar"></span></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="meta">
+                <strong>Editorial · Cepat · Siap Konversi</strong><br>
+                Laravel · Tailwind CSS · Modern JavaScript
+            </div>
+            <div class="stamp">SERVICE <span>01</span></div>
+        </footer>
+    </div>
+</div>
+</body>
+</html>

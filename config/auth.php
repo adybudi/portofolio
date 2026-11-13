@@ -22,6 +22,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public Registration Safety Switch
+    |--------------------------------------------------------------------------
+    |
+    | Public registration stays disabled in production unless this flag is
+    | explicitly enabled. The CMS checkbox only works in production when this
+    | configuration value is true, which prevents accidental exposure.
+    |
+    */
+
+    'allow_public_registration_in_production' => env('ALLOW_PUBLIC_REGISTRATION_IN_PRODUCTION', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication Guards
     |--------------------------------------------------------------------------
     |

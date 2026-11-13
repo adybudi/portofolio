@@ -149,21 +149,67 @@ class BackupController extends Controller
                     'show_portfolio_section', 'show_products_section', 'show_services_section',
                     'show_experience_section', 'show_certifications_section',
                     'show_contact_section',
+                    // Media & maintenance copy are content too; keep them in sync.
+                    'cv_file_path', 'hero_avatar', 'hero_avatars', 'hero_hover_duration',
+                    'maintenance_title', 'maintenance_message', 'maintenance_until',
                 ];
 
                 if (isset($content['settings']) && is_array($content['settings'])) {
                     foreach ($content['settings'] as $s) {
-                        if (isset($s['key']) && in_array($s['key'], $allowedSettingKeys, true)) {
-                            Setting::set($s['key'], $s['value'] ?? '');
+                        if (!isset($s['key']) || !in_array($s['key'], $allowedSettingKeys, true)) {
+                            continue;
                         }
+
+                        // Never blank out a live setting when the backup carries null.
+                        if (!array_key_exists('value', $s) || $s['value'] === null) {
+                            continue;
+                        }
+
+                        $settingKey = $s['key'];
+                        $settingValue = (string) $s['value'];
+
+                        if (in_array($settingKey, ['cv_file_path', 'hero_avatar'], true)) {
+                            $settingValue = $this->sanitizeFilePath($settingValue) ?? '';
+                        } elseif ($settingKey === 'hero_avatars') {
+                            $decoded = json_decode($settingValue, true);
+                            if (!is_array($decoded)) {
+                                continue;
+                            }
+
+                            $paths = [];
+                            foreach ($decoded as $path) {
+                                if (!is_string($path)) {
+                                    continue;
+                                }
+                                $safePath = $this->sanitizeFilePath($path);
+                                if ($safePath !== null) {
+                                    $paths[] = $safePath;
+                                }
+                            }
+
+                            if (empty($paths)) {
+                                continue;
+                            }
+
+                            $settingValue = json_encode(array_values(array_unique($paths)));
+                        } elseif ($settingKey === 'hero_hover_duration') {
+                            $settingValue = (string) max(200, min(10000, (int) $settingValue));
+                        }
+
+                        Setting::set($settingKey, $settingValue);
                     }
                 }
 
                 if (isset($content['portfolios']) && is_array($content['portfolios'])) {
                     foreach ($content['portfolios'] as $p) {
                         if (isset($p['title'])) {
-                            $slug = $p['slug'] ?? (Str::slug($p['title']) . '-' . Str::random(5));
-                            Portfolio::updateOrCreate(['slug' => $slug], [
+                            // Prefer the stored slug; fall back to a deterministic slug so
+                            // repeated imports update existing rows instead of duplicating them.
+                            $identity = !empty($p['slug']) ? ['slug' => $p['slug']] : ['title' => $p['title']];
+                            $slug = !empty($p['slug']) ? $p['slug'] : Str::slug($p['title']);
+
+                            Portfolio::updateOrCreate($identity, [
+                                'slug' => $slug,
                                 'title' => $p['title'],
                                 'description' => $p['description'] ?? '',
                                 'image_path' => $this->sanitizeFilePath($p['image_path'] ?? null),
@@ -179,8 +225,17 @@ class BackupController extends Controller
                 if (isset($content['products']) && is_array($content['products'])) {
                     foreach ($content['products'] as $prod) {
                         $title = $prod['title'] ?? null;
-                        $slug = $prod['slug'] ?? (!empty($title) ? (Str::slug($title) . '-' . Str::random(5)) : ('product-' . time() . '-' . Str::random(5)));
-                        Product::updateOrCreate(['slug' => $slug], [
+
+                        // A product without slug and title cannot be matched safely.
+                        if (empty($prod['slug']) && empty($title)) {
+                            continue;
+                        }
+
+                        $identity = !empty($prod['slug']) ? ['slug' => $prod['slug']] : ['title' => $title];
+                        $slug = !empty($prod['slug']) ? $prod['slug'] : Str::slug($title);
+
+                        Product::updateOrCreate($identity, [
+                            'slug' => $slug,
                             'title' => $title,
                             'description' => $prod['description'] ?? null,
                             'price' => $prod['price'] ?? null,
@@ -196,8 +251,11 @@ class BackupController extends Controller
                 if (isset($content['services']) && is_array($content['services'])) {
                     foreach ($content['services'] as $srv) {
                         if (isset($srv['title'])) {
-                            $slug = $srv['slug'] ?? (Str::slug($srv['title']) . '-' . Str::random(5));
-                            Service::updateOrCreate(['slug' => $slug], [
+                            $identity = !empty($srv['slug']) ? ['slug' => $srv['slug']] : ['title' => $srv['title']];
+                            $slug = !empty($srv['slug']) ? $srv['slug'] : Str::slug($srv['title']);
+
+                            Service::updateOrCreate($identity, [
+                                'slug' => $slug,
                                 'title' => $srv['title'],
                                 'description' => $srv['description'] ?? null,
                                 'price' => $srv['price'] ?? null,
@@ -215,8 +273,11 @@ class BackupController extends Controller
                 if (isset($content['tools']) && is_array($content['tools'])) {
                     foreach ($content['tools'] as $t) {
                         if (isset($t['name']) && isset($t['url'])) {
-                            $slug = $t['slug'] ?? (Str::slug($t['name']) . '-' . Str::random(5));
-                            Tool::updateOrCreate(['slug' => $slug], [
+                            $identity = !empty($t['slug']) ? ['slug' => $t['slug']] : ['name' => $t['name']];
+                            $slug = !empty($t['slug']) ? $t['slug'] : Str::slug($t['name']);
+
+                            Tool::updateOrCreate($identity, [
+                                'slug' => $slug,
                                 'name' => $t['name'],
                                 'description' => $t['description'] ?? '',
                                 'icon_path' => $this->sanitizeFilePath($t['icon_path'] ?? null),

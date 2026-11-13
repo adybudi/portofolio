@@ -22,7 +22,7 @@ class SecurityHeaders
 
         // Content-Security-Policy (CSP) configured to support Alpine.js, Spline 3D, Google Fonts, Cloudflare Turnstile, and local assets
         $csp = "default-src 'self'; " .
-               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdnjs.cloudflare.com; " .
+               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com; " .
                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
                "font-src 'self' https://fonts.gstatic.com data:; " .
                "img-src 'self' data: https: blob:; " .
@@ -31,6 +31,33 @@ class SecurityHeaders
                "object-src 'none'; " .
                "base-uri 'self'; " .
                "form-action 'self';";
+
+        // Allow Vite dev server assets (separate origin) while running `npm run dev`
+        if (! app()->environment('production')) {
+            $hotFile = public_path('hot');
+
+            if (is_file($hotFile)) {
+                $viteOrigin = rtrim(trim((string) file_get_contents($hotFile)), '/');
+
+                if ($viteOrigin !== '') {
+                    $viteWsOrigin = preg_replace('#^http#', 'ws', $viteOrigin);
+
+                    $csp = str_replace(
+                        [
+                            "script-src 'self'",
+                            "style-src 'self'",
+                            "connect-src 'self' https:",
+                        ],
+                        [
+                            "script-src 'self' {$viteOrigin}",
+                            "style-src 'self' {$viteOrigin}",
+                            "connect-src 'self' https: {$viteOrigin} {$viteWsOrigin}",
+                        ],
+                        $csp
+                    );
+                }
+            }
+        }
 
         $response->headers->set('Content-Security-Policy', $csp);
 

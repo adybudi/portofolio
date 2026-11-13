@@ -27,7 +27,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     @foreach($settings['hero_avatars'] as $index => $photo)
                         <div class="relative border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#131924] p-2 space-y-2">
-                            <img src="{{ asset($photo) }}" class="w-full aspect-[4/5] object-cover" />
+                            <img src="{{ uploaded_asset($photo) }}" class="w-full aspect-[4/5] object-cover" />
                             <div class="flex items-center justify-between">
                                 <span class="text-[10px] font-mono text-subtext">Foto #{{ $index + 1 }}</span>
                                 @if(count($settings['hero_avatars']) > 1)
@@ -162,6 +162,12 @@
                     <div>
                         <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Deskripsi Profil About Me *</label>
                         <textarea name="about_text" rows="4" required class="textarea textarea-bordered input-theme w-full rounded-none text-xs leading-relaxed">{{ old('about_text', $settings['about_text']) }}</textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Skills &amp; Tech Stack (pisahkan dengan koma)</label>
+                        <textarea name="skills" rows="3" class="textarea textarea-bordered input-theme w-full rounded-none text-xs leading-relaxed" placeholder="jQuery, JavaScript, React.js, CSS, HTML5, MySQL, Laravel, PHP">{{ old('skills', $settings['skills']) }}</textarea>
+                        <span class="text-[10px] text-subtext mt-1 block font-mono">Contoh: Laravel, PHP, JavaScript, React.js, MySQL</span>
                     </div>
 
                     <div>
@@ -305,6 +311,60 @@
                             <span class="text-[11px] text-subtext">Secara bawaan (*default*) opsi ini <strong>dinonaktifkan (OFF)</strong> demi mencegah siapapun mendaftarkan akun admin baru secara bebas. Centang hanya jika Anda sengaja ingin membuka pendaftaran akun.</span>
                         </div>
                     </label>
+                </div>
+
+                <!-- Section 7: Dynamic Maintenance Mode Control -->
+                <div class="space-y-5 pt-4 border-t border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-extrabold uppercase tracking-widest text-amber-500 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
+                            <span>7. Mode Pemeliharaan Situs (Maintenance Mode)</span>
+                        </h3>
+                        @if($settings['maintenance_mode_enabled'])
+                            <span class="px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-500 text-[10px] font-mono font-bold uppercase tracking-wider animate-pulse">
+                                ● Status: Aktif (Publik Tertahan)
+                            </span>
+                        @else
+                            <span class="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-[10px] font-mono font-bold uppercase tracking-wider">
+                                ● Status: Normal (Situs Online)
+                            </span>
+                        @endif
+                    </div>
+
+                    @if($settings['maintenance_mode_enabled'])
+                        <div class="p-4 bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs flex items-start gap-3">
+                            <span class="text-base">⚠️</span>
+                            <div>
+                                <strong class="font-bold block uppercase tracking-wider mb-0.5">Mode Pemeliharaan Sedang Aktif</strong>
+                                <span>Seluruh pengunjung umum saat ini dialihkan ke halaman pemeliharaan (*HTTP 503*). Anda sebagai Admin yang sedang terautentikasi tetap memiliki akses penuh ke Dashboard CMS & halaman admin.</span>
+                            </div>
+                        </div>
+                    @endif
+
+                    <label class="p-4 border border-amber-500/30 bg-amber-500/5 flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" name="maintenance_mode_enabled" value="1" {{ $settings['maintenance_mode_enabled'] ? 'checked' : '' }} class="checkbox checkbox-warning">
+                        <div>
+                            <span class="text-xs font-extrabold text-heading uppercase block">Aktifkan Mode Pemeliharaan (Maintenance Mode)</span>
+                            <span class="text-[11px] text-subtext">Ketika diaktifkan, pengunjung publik hanya akan melihat halaman perbaikan situs. Rute <code>/admin/*</code> dan <code>/login</code> tetap dapat diakses oleh admin.</span>
+                        </div>
+                    </label>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+                        <div>
+                            <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Judul Pemeliharaan (Title)</label>
+                            <input type="text" name="maintenance_title" value="{{ old('maintenance_title', $settings['maintenance_title']) }}" placeholder="misal: Situs Sedang Dalam Pemeliharaan Rutin" class="input input-theme w-full rounded-none text-xs">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Estimasi Waktu Selesai (Opsional)</label>
+                            <input type="text" name="maintenance_until" value="{{ old('maintenance_until', $settings['maintenance_until']) }}" placeholder="misal: 19 Agustus 2026, 12:00 WIB" class="input input-theme w-full rounded-none text-xs font-mono">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Pesan Penjelasan untuk Pengunjung</label>
+                        <textarea name="maintenance_message" rows="3" placeholder="Tuliskan alasan pemeliharaan dan informasi kontak..." class="textarea textarea-bordered input-theme w-full rounded-none text-xs leading-relaxed">{{ old('maintenance_message', $settings['maintenance_message']) }}</textarea>
+                    </div>
                 </div>
 
                 <!-- Submit Button -->

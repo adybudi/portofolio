@@ -89,7 +89,7 @@
                 </a>
                 <button @click="openRestoreModal = true" class="flex items-center gap-1.5 px-4 py-2 border border-slate-300 dark:border-slate-700 text-subtext hover:text-heading text-xs font-mono font-bold uppercase hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                    <span>Restore Backup JSON</span>
+                    <span>Import / Sinkronisasi JSON</span>
                 </button>
             </div>
 
@@ -97,7 +97,7 @@
             <div x-show="openRestoreModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" x-cloak>
                 <div x-show="openRestoreModal" x-cloak class="editorial-card bg-white dark:bg-[#131924] p-6 sm:p-8 w-full max-w-md space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800">
                     <div class="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-slate-800">
-                        <h3 class="font-display text-xl font-bold uppercase text-heading">Restore Backup CMS JSON</h3>
+                        <h3 class="font-display text-xl font-bold uppercase text-heading">Import / Sinkronisasi Backup CMS JSON</h3>
                         <button @click="openRestoreModal = false" class="text-subtext hover:text-heading p-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
@@ -108,6 +108,9 @@
                         <div>
                             <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Upload File JSON Backup * (Max 5MB)</label>
                             <input type="file" name="backup_file" accept=".json,application/json,text/plain" required class="file-input file-input-bordered w-full input-theme rounded-none text-xs">
+                            <p class="text-[10px] text-subtext leading-relaxed mt-2">
+                                Berisi konten CMS (portofolio, produk, jasa, tools, pengalaman, sertifikasi, settings). Data user & pesan kontak tidak termasuk. Import bersifat non-destruktif: data yang tidak ada di file tidak dihapus.
+                            </p>
                         </div>
 
                         <div class="pt-4 flex justify-end gap-3">

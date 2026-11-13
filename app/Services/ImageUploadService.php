@@ -51,17 +51,20 @@ class ImageUploadService
         // 4. Save using explicit Storage::disk('public')
         $storedPath = $file->storeAs($folderPath, $filename, 'public');
 
-        // 5. Shared Hosting Sync (Direct copy to public_path for environments without symlink)
-        try {
-            $targetDir = public_path($folderPath);
-            if (!file_exists($targetDir)) {
-                @mkdir($targetDir, 0755, true);
+        // 5. Shared Hosting Sync (Direct copy to public_path for environments without symlink).
+        // Skip during tests so the suite never writes into the real public/uploads folder.
+        if (!app()->runningUnitTests()) {
+            try {
+                $targetDir = public_path($folderPath);
+                if (!file_exists($targetDir)) {
+                    @mkdir($targetDir, 0755, true);
+                }
+                if (file_exists($file->getRealPath())) {
+                    @copy($file->getRealPath(), $targetDir . '/' . $filename);
+                }
+            } catch (\Throwable $e) {
+                // Continue gracefully if public_path copy is restricted
             }
-            if (file_exists($file->getRealPath())) {
-                @copy($file->getRealPath(), $targetDir . '/' . $filename);
-            }
-        } catch (\Throwable $e) {
-            // Continue gracefully if public_path copy is restricted
         }
 
         return $storedPath;

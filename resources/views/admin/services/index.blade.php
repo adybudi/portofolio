@@ -49,6 +49,7 @@
                                 </td>
                                 <td class="p-4 font-mono">
                                     @if($service->price !== null)
+                                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-[#0096c7] block mb-0.5">Mulai dari</span>
                                         @if($service->has_discount && $service->discount_price)
                                             <div class="space-y-0.5">
                                                 <span class="block text-xs line-through text-subtext">

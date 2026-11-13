@@ -27,15 +27,25 @@
                             <option value="SaaS Platform">SaaS Platform</option>
                             <option value="Backend API">Backend API</option>
                             <option value="Mobile App">Mobile App</option>
+                            <option value="E-Commerce & Retail">E-Commerce &amp; Retail</option>
+                            <option value="Company Profile & Landing Page">Company Profile &amp; Landing Page</option>
+                            <option value="Sistem Informasi & Dashboard">Sistem Informasi &amp; Dashboard</option>
+                            <option value="Aplikasi Custom">Aplikasi Custom</option>
                         </select>
                         @error('category') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="flex items-center pt-6">
-                        <label class="cursor-pointer flex items-center gap-3">
-                            <input type="checkbox" name="is_featured" value="1" class="checkbox checkbox-primary" />
-                            <span class="text-xs uppercase font-extrabold tracking-wider text-heading">Tampilkan sebagai Featured</span>
-                        </label>
+                    <div class="flex items-start pt-6">
+                        <div class="space-y-3">
+                            <label class="cursor-pointer flex items-center gap-3">
+                                <input type="checkbox" name="is_featured" value="1" class="checkbox checkbox-primary" />
+                                <span class="text-xs uppercase font-extrabold tracking-wider text-heading">Tampilkan sebagai Featured</span>
+                            </label>
+                            <label class="cursor-pointer flex items-center gap-3">
+                                <input type="checkbox" name="is_active" value="1" checked class="checkbox checkbox-primary" />
+                                <span class="text-xs uppercase font-extrabold tracking-wider text-heading">Aktif / Tampilkan di Website</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 

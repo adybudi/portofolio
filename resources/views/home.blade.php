@@ -1,7 +1,7 @@
 <x-layouts.app-public :settings="$settings">
 
     <!-- Hero Section (Balanced Top Padding Gap & Auto-Play Slideshow) -->
-    <section class="pt-8 sm:pt-12 pb-12 sm:pb-16 relative border-b border-slate-200 dark:border-slate-800 overflow-hidden" id="about">
+    <section class="pt-8 sm:pt-12 pb-12 sm:pb-16 relative border-b border-slate-200 dark:border-slate-800 overflow-hidden" id="hero">
         <!-- Three.js 3D Particle Constellation / Wave Field Canvas -->
         <div id="hero-3d-canvas" class="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-50"></div>
 
@@ -89,7 +89,7 @@
                             <!-- Multi-Photo Gallery Slideshow Container -->
                             <div class="relative z-10 w-full h-full rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-800 shadow-2xl bg-[#edeef1] dark:bg-[#131924]">
                                 @foreach($settings['hero_avatars'] as $index => $photo)
-                                    <img src="{{ asset($photo) }}"
+                                    <img src="{{ uploaded_asset($photo) }}"
                                          alt="Ady Budisantika - Foto {{ $index + 1 }}"
                                          x-show="activeIndex === {{ $index }}"
                                          x-transition:enter="transition ease-out duration-700"
@@ -106,9 +106,11 @@
                                     <div class="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-1.5">
                                         @foreach($settings['hero_avatars'] as $index => $photo)
                                             <button @click="activeIndex = {{ $index }}" type="button"
-                                                    :class="activeIndex === {{ $index }} ? 'w-6 bg-[#0096c7]' : 'w-2 bg-white/50'"
-                                                    class="h-1.5 rounded-full transition-all duration-300"
-                                                    title="Foto {{ $index + 1 }}"></button>
+                                                    aria-label="Tampilkan foto {{ $index + 1 }}"
+                                                    class="flex h-6 w-6 items-center justify-center">
+                                                <span :class="activeIndex === {{ $index }} ? 'w-6 bg-[#0096c7]' : 'w-2 bg-white/50'"
+                                                      class="block h-1.5 rounded-full transition-all duration-300"></span>
+                                            </button>
                                         @endforeach
                                     </div>
                                 @endif
@@ -120,6 +122,68 @@
             </div>
         </div>
     </section>
+
+    <!-- Dynamic Section: About Me, Impact Stats & Editorial Quote (CMS driven) -->
+    @if(!empty($settings['about_text']) || !empty($settings['editorial_quote']))
+        <section id="about" class="py-12 sm:py-16 relative border-b border-slate-200 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+                    <!-- Left: About Text -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <h2 class="text-xs font-bold uppercase tracking-[0.25em] text-heading">TENTANG SAYA</h2>
+                        <div class="accent-line"></div>
+                        @if(!empty($settings['about_text']))
+                            <p class="text-sm text-subtext leading-relaxed font-normal">{{ $settings['about_text'] }}</p>
+                        @endif
+                        @if(!empty($settings['skills']))
+                            <div class="flex flex-wrap gap-2 pt-2">
+                                @foreach($settings['skills'] as $skill)
+                                    <span class="px-2.5 py-1 border border-[#0096c7]/30 bg-[#0096c7]/10 text-[#0096c7] text-[10px] font-mono font-bold uppercase tracking-wider">{{ $skill }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Right: Stats & Quote -->
+                    <div class="lg:col-span-7 space-y-6">
+                        @php
+                            $impactStats = [
+                                ['value' => $settings['stat_years_experience'] ?? '', 'label' => 'Tahun Pengalaman'],
+                                ['value' => $settings['stat_projects_completed'] ?? '', 'label' => 'Pengalaman Kerja'],
+                                ['value' => $settings['stat_satisfied_clients'] ?? '', 'label' => 'Keahlian'],
+                            ];
+                        @endphp
+
+                        @if(collect($impactStats)->where('value', '!=', '')->isNotEmpty())
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                @foreach($impactStats as $stat)
+                                    @if($stat['value'] !== '')
+                                        <div class="editorial-card p-5">
+                                            <span class="font-display text-4xl font-extrabold text-heading block leading-none">{{ $stat['value'] }}</span>
+                                            <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-[#0096c7] block mt-2">{{ $stat['label'] }}</span>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if(!empty($settings['editorial_quote']))
+                            <blockquote class="editorial-card p-6 border-l-4 border-l-[#0096c7]">
+                                <p class="font-display text-lg sm:text-xl font-bold uppercase text-heading leading-snug">
+                                    “{{ $settings['editorial_quote'] }}”
+                                </p>
+                                <footer class="mt-3 text-[10px] font-mono font-bold uppercase tracking-widest text-subtext">
+                                    — Ady Budisantika
+                                </footer>
+                            </blockquote>
+                        @endif
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    @endif
 
     <!-- Dynamic Section: Jasa / Layanan Saya -->
     @if(($settings['show_services_section'] ?? true) && isset($services) && count($services) > 0)
@@ -140,44 +204,56 @@
 
                     <!-- Right: Service Cards Grid -->
                     <div class="lg:col-span-8">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        @php $featuredService = $services->take(4)->count() === 1; @endphp
+                        <div class="grid grid-cols-1 {{ $featuredService ? '' : 'sm:grid-cols-2' }} gap-5">
                             @foreach($services->take(4) as $service)
-                            <div class="border border-slate-200 dark:border-slate-800 p-5 hover:border-[#0096c7] transition-colors group relative bg-white dark:bg-[#111827]/60">
+                            @php $isFeaturedCard = $featuredService && $service->image; @endphp
+                            <div class="border border-slate-200 dark:border-slate-800 p-5 hover:border-[#0096c7] transition-colors group relative bg-white dark:bg-[#111827]/60 {{ $isFeaturedCard ? 'sm:grid sm:grid-cols-2 sm:items-stretch sm:gap-6' : '' }}">
                                 @if($service->image)
-                                    <img src="{{ uploaded_asset($service->image) }}" alt="{{ $service->title }}" class="w-full h-36 object-cover mb-4 border border-slate-100 dark:border-slate-800">
-                                @endif
-                                <h3 class="font-extrabold text-heading text-sm uppercase tracking-tight group-hover:text-[#0096c7] transition-colors">{{ $service->title }}</h3>
-                                @if($service->description)
-                                    <p class="text-subtext text-xs mt-2 leading-relaxed line-clamp-2">{{ $service->description }}</p>
-                                @endif
-
-                                @if($service->features && count($service->features) > 0)
-                                    <ul class="mt-3 space-y-1">
-                                        @foreach(array_slice($service->features, 0, 3) as $feature)
-                                            <li class="flex items-center gap-1.5 text-xs text-subtext">
-                                                <svg class="w-3 h-3 text-[#0096c7] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                                {{ $feature }}
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-
-                                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-end justify-between gap-2">
-                                    <div>
-                                        @if($service->price)
-                                            @if($service->has_discount && $service->discount_price)
-                                                <span class="text-[10px] line-through text-subtext font-mono">Rp {{ number_format($service->price, 0, ',', '.') }}</span>
-                                                <span class="block text-sm font-extrabold text-[#0096c7] font-mono">Rp {{ number_format($service->discount_price, 0, ',', '.') }}</span>
-                                            @else
-                                                <span class="text-sm font-extrabold text-heading font-mono">Rp {{ number_format($service->price, 0, ',', '.') }}</span>
-                                            @endif
-                                        @else
-                                            <span class="text-xs text-subtext font-medium">Hubungi untuk harga</span>
-                                        @endif
+                                    <img src="{{ uploaded_asset($service->image) }}" alt="{{ $service->title }}" loading="lazy" decoding="async" class="w-full aspect-video object-cover {{ $isFeaturedCard ? 'sm:mb-0' : 'mb-4' }} border border-slate-100 dark:border-slate-800">
+                                @else
+                                    <div class="relative w-full aspect-video overflow-hidden bg-[#0b0f17] border border-slate-100 dark:border-slate-800 {{ $isFeaturedCard ? 'sm:mb-0' : 'mb-4' }} p-4 flex flex-col justify-between">
+                                        <span class="relative text-[9px] font-mono font-bold uppercase tracking-widest text-[#48cae4]">Layanan</span>
+                                        <span class="relative font-display text-xl font-bold uppercase leading-none text-white line-clamp-2">{{ $service->title }}</span>
+                                        <span class="relative text-[8px] font-mono font-bold uppercase tracking-[0.2em] text-slate-400">Ady Budisantika</span>
                                     </div>
-                                    <a href="{{ route('home') }}#contact" class="px-3 py-1.5 bg-[#0096c7] hover:bg-[#0077b6] text-white text-[10px] font-bold uppercase tracking-wider transition-all shrink-0">
-                                        Hubungi
-                                    </a>
+                                @endif
+
+                                <div class="{{ $isFeaturedCard ? 'flex h-full flex-col' : '' }}">
+                                    <h3 class="font-extrabold text-heading text-sm uppercase tracking-tight group-hover:text-[#0096c7] transition-colors">{{ $service->title }}</h3>
+                                    @if($service->description)
+                                        <p class="text-subtext text-xs mt-2 leading-relaxed line-clamp-2">{{ $service->description }}</p>
+                                    @endif
+
+                                    @if($service->features && count($service->features) > 0)
+                                        <ul class="mt-3 space-y-1">
+                                            @foreach(array_slice($service->features, 0, 3) as $feature)
+                                                <li class="flex items-center gap-1.5 text-xs text-subtext">
+                                                    <svg class="w-3 h-3 text-[#0096c7] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                    {{ $feature }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+
+                                    <div class="{{ $isFeaturedCard ? 'mt-auto pt-4' : 'mt-4 pt-3' }} border-t border-slate-100 dark:border-slate-800 flex items-end justify-between gap-2">
+                                        <div>
+                                            @if($service->price)
+                                                <span class="text-[9px] font-extrabold uppercase tracking-widest text-[#0096c7] block">MULAI DARI</span>
+                                                @if($service->has_discount && $service->discount_price)
+                                                    <span class="text-[10px] line-through text-subtext font-mono">Rp {{ number_format($service->price, 0, ',', '.') }}</span>
+                                                    <span class="block text-sm font-extrabold text-[#0096c7] font-mono leading-tight">Rp {{ number_format($service->discount_price, 0, ',', '.') }}</span>
+                                                @else
+                                                    <span class="text-sm font-extrabold text-heading font-mono leading-tight block">Rp {{ number_format($service->price, 0, ',', '.') }}</span>
+                                                @endif
+                                            @else
+                                                <span class="text-xs text-subtext font-medium">Hubungi untuk harga</span>
+                                            @endif
+                                        </div>
+                                        <a href="{{ route('home') }}#contact" class="px-3 py-1.5 bg-[#0096c7] hover:bg-[#0077b6] text-white text-[10px] font-bold uppercase tracking-wider transition-all shrink-0">
+                                            Hubungi
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             @endforeach
@@ -220,8 +296,8 @@
                         </div>
 
                         <div class="pt-4">
-                            <a href="{{ route('tools.index') }}" target="_blank" class="text-xs uppercase tracking-widest font-extrabold text-[#0096c7] hover:underline inline-flex items-center gap-2">
-                                <span>LIHAT SEMUA TOOLS & PROYEK</span>
+                            <a href="{{ route('portfolio.index') }}" class="text-xs uppercase tracking-widest font-extrabold text-[#0096c7] hover:underline inline-flex items-center gap-2">
+                                <span>LIHAT SEMUA PROYEK ({{ $totalPortfoliosCount }})</span>
                                 <span>→</span>
                             </a>
                         </div>
@@ -231,6 +307,10 @@
                     <div class="lg:col-span-8">
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             @forelse($portfolios as $index => $item)
+                                @php
+                                    $itemData = $item->toArray();
+                                    $itemData['image_url'] = $item->image_path ? uploaded_asset($item->image_path) : null;
+                                @endphp
                                 <div class="editorial-card editorial-card-hover rounded-none p-4 flex flex-col justify-between space-y-4 group"
                                      x-show="selectedTab === 'Semua' || selectedTab === '{{ $item->category }}'">
                                     <div class="space-y-3">
@@ -247,11 +327,15 @@
                                             {{ $item->title }}
                                         </h3>
 
-                                        <div @click="selectedProject = {{ json_encode($item) }}; isModalOpen = true" class="aspect-video w-full overflow-hidden bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer relative">
+                                        <div @click="selectedProject = {{ json_encode($itemData) }}; isModalOpen = true" class="aspect-video w-full overflow-hidden bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer relative">
                                             @if($item->image_path)
-                                                <img src="{{ asset($item->image_path) }}" alt="{{ $item->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500">
+                                                <img src="{{ uploaded_asset($item->image_path) }}" alt="{{ $item->title }}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500">
                                             @else
-                                                <div class="w-full h-full flex items-center justify-center text-xs text-subtext">Tidak Ada Gambar</div>
+                                                <div class="relative w-full h-full overflow-hidden bg-[#0b0f17] p-4 flex flex-col justify-between">
+                                                    <span class="relative text-[9px] font-mono font-bold uppercase tracking-widest text-[#48cae4]">{{ $item->category }}</span>
+                                                    <span class="relative font-display text-2xl font-bold uppercase leading-none text-white line-clamp-2">{{ $item->title }}</span>
+                                                    <span class="relative text-[8px] font-mono font-bold uppercase tracking-[0.2em] text-slate-400">Case Study</span>
+                                                </div>
                                             @endif
                                             <div class="absolute inset-0 bg-[#0096c7]/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                 <span class="px-3 py-1.5 bg-black/80 text-white text-[10px] uppercase font-bold tracking-widest flex items-center gap-1.5">
@@ -275,7 +359,7 @@
                                     </div>
 
                                     <div class="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-widest">
-                                        <button type="button" @click="selectedProject = {{ json_encode($item) }}; isModalOpen = true" class="text-heading hover:text-[#0096c7] transition-colors flex items-center gap-1">
+                                        <button type="button" @click="selectedProject = {{ json_encode($itemData) }}; isModalOpen = true" class="text-heading hover:text-[#0096c7] transition-colors flex items-center gap-1">
                                             <svg class="w-3.5 h-3.5 text-[#0096c7]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                                             <span>Detail Proyek</span>
                                         </button>
@@ -316,11 +400,15 @@
                                 <h3 class="font-display text-3xl font-extrabold uppercase text-heading" x-text="selectedProject.title"></h3>
 
                                 <div class="w-full aspect-video bg-slate-200 dark:bg-slate-800 overflow-hidden border border-slate-300 dark:border-slate-700">
-                                    <template x-if="selectedProject.image_path">
-                                        <img :src="'/' + selectedProject.image_path" :alt="selectedProject.title" class="w-full h-full object-cover">
+                                    <template x-if="selectedProject.image_url">
+                                        <img :src="selectedProject.image_url" :alt="selectedProject.title" class="w-full h-full object-cover">
                                     </template>
-                                    <template x-if="!selectedProject.image_path">
-                                        <div class="w-full h-full flex items-center justify-center text-xs text-subtext">Tidak Ada Pratinjau Gambar</div>
+                                    <template x-if="!selectedProject.image_url">
+                                        <div class="relative w-full h-full overflow-hidden bg-[#0b0f17] p-6 flex flex-col justify-between">
+                                            <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-[#48cae4]" x-text="selectedProject.category"></span>
+                                            <span class="font-display text-4xl font-bold uppercase leading-none text-white" x-text="selectedProject.title"></span>
+                                            <span class="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-slate-400">Case Study / Ady Budisantika</span>
+                                        </div>
                                     </template>
                                 </div>
 
@@ -361,7 +449,7 @@
     @endif
 
     <!-- Dynamic Section: Highlight Products & Digital Goods -->
-    @if($settings['show_products_section'] ?? true)
+    @if(($settings['show_products_section'] ?? true) && $latestProducts->isNotEmpty())
         <section id="products" class="py-12 sm:py-16 relative border-b border-slate-200 dark:border-slate-800" x-data="{ selectedHomeProduct: null, isProductModalOpen: false }">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -388,13 +476,17 @@
                     <div class="lg:col-span-8">
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             @forelse($latestProducts as $index => $product)
+                                @php
+                                    $productData = $product->toArray();
+                                    $productData['image_url'] = uploaded_asset($product->image_path);
+                                @endphp
                                 <div class="editorial-card editorial-card-hover rounded-none p-4 flex flex-col justify-between space-y-3 group cursor-pointer"
-                                     @click="selectedHomeProduct = {{ json_encode($product) }}; isProductModalOpen = true">
+                                     @click="selectedHomeProduct = {{ json_encode($productData) }}; isProductModalOpen = true">
 
                                     <div class="space-y-3">
                                         <div class="aspect-[4/3] w-full overflow-hidden bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 relative">
                                             @if($product->image_path)
-                                                <img src="{{ uploaded_asset($product->image_path) }}" alt="{{ $product->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500">
+                                                <img src="{{ uploaded_asset($product->image_path) }}" alt="{{ $product->title }}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500">
                                             @else
                                                 <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-100 dark:bg-slate-900/60 p-4 text-center">
                                                     <svg class="w-10 h-10 mb-1 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
@@ -464,9 +556,9 @@
 
                                 <h3 class="font-display text-3xl font-extrabold uppercase text-heading" x-text="selectedHomeProduct.title || 'Produk (Tanpa Judul)'"></h3>
 
-                                <template x-if="selectedHomeProduct.image_path">
+                                <template x-if="selectedHomeProduct.image_url">
                                     <div class="w-full aspect-[4/3] bg-slate-900 overflow-hidden border border-slate-300 dark:border-slate-700 flex items-center justify-center">
-                                        <img :src="'/' + selectedHomeProduct.image_path" :alt="selectedHomeProduct.title" class="w-full h-full object-cover">
+                                        <img :src="selectedHomeProduct.image_url" :alt="selectedHomeProduct.title" class="w-full h-full object-cover">
                                     </div>
                                 </template>
 
@@ -624,7 +716,7 @@
                                 @if(!empty($settings['linkedin_url']))
                                     <div>
                                         <span class="text-[10px] font-bold uppercase tracking-widest text-subtext block">LINKEDIN</span>
-                                        <a href="{{ $settings['linkedin_url'] }}" target="_blank" class="font-bold text-heading hover:text-[#0096c7] transition-colors">linkedin.com/in/adybudi</a>
+                                        <a href="{{ $settings['linkedin_url'] }}" target="_blank" class="font-bold text-heading hover:text-[#0096c7] transition-colors">linkedin.com/in/ady-budisantika-2a6814335</a>
                                     </div>
                                 @endif
                             </div>

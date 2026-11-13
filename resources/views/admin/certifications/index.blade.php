@@ -5,7 +5,7 @@
         openEditModal: false,
         showDeleteModal: false,
         deleteForm: null,
-        editData: { id: '', name: '', issuer: '', icon: 'AWS', description: '', credential_url: '', order: 1 }
+        editData: { id: '', name: '', issuer: '', icon: 'AWS', description: '', credential_url: '', issue_date: '', order: 1 }
     }">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
@@ -60,6 +60,7 @@
                                                 icon: '{{ addslashes($item->icon) }}',
                                                 description: '{{ addslashes($item->description) }}',
                                                 credential_url: '{{ addslashes($item->credential_url) }}',
+                                                issue_date: '{{ addslashes($item->issue_date ?? '') }}',
                                                 order: {{ $item->order }}
                                             };
                                             openEditModal = true;
@@ -119,6 +120,11 @@
                     </div>
 
                     <div>
+                        <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Tanggal Terbit (Opsional)</label>
+                        <input type="text" name="issue_date" placeholder="misal: 2025-05-01" class="input input-theme w-full rounded-none text-xs font-mono">
+                    </div>
+
+                    <div>
                         <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Credential URL (Opsional)</label>
                         <input type="url" name="credential_url" placeholder="https://..." class="input input-theme w-full rounded-none text-xs">
                     </div>
@@ -169,6 +175,11 @@
                     <div>
                         <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Credential URL (Opsional)</label>
                         <input type="url" name="credential_url" x-model="editData.credential_url" class="input input-theme w-full rounded-none text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase tracking-widest text-subtext mb-2">Tanggal Terbit (Opsional)</label>
+                        <input type="text" name="issue_date" x-model="editData.issue_date" placeholder="misal: 2025-05-01" class="input input-theme w-full rounded-none text-xs font-mono">
                     </div>
 
                     <div>

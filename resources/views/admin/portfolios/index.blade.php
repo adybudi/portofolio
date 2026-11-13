@@ -46,11 +46,16 @@
                                     </span>
                                 </td>
                                 <td class="p-4">
-                                    @if($item->is_featured)
-                                        <span class="px-2 py-0.5 border border-[#0096c7] text-[#0096c7] text-[10px] font-mono uppercase font-bold">Featured</span>
-                                    @else
-                                        <span class="px-2 py-0.5 border border-slate-300 dark:border-slate-700 text-subtext text-[10px] font-mono uppercase">Standard</span>
-                                    @endif
+                                    <div class="flex flex-col gap-1 items-start">
+                                        @if($item->is_active)
+                                            <span class="px-2 py-0.5 border border-emerald-500/50 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono uppercase font-bold">Aktif</span>
+                                        @else
+                                            <span class="px-2 py-0.5 border border-rose-500/50 text-rose-600 dark:text-rose-400 text-[10px] font-mono uppercase font-bold">Nonaktif</span>
+                                        @endif
+                                        @if($item->is_featured)
+                                            <span class="px-2 py-0.5 border border-[#0096c7] text-[#0096c7] text-[10px] font-mono uppercase font-bold">Featured</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="p-4 hidden lg:table-cell font-mono text-xs text-[#0096c7]">
                                     @if($item->project_url)
@@ -63,7 +68,14 @@
                                     @endif
                                 </td>
                                 <td class="p-4 text-right">
-                                    <div class="flex items-center justify-end gap-2">
+                                    <div class="flex flex-wrap items-center justify-end gap-2">
+                                        <form method="POST" action="{{ route('admin.portfolios.toggle', $item) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="px-3 py-1 border border-slate-300 dark:border-slate-700 text-heading text-[10px] uppercase font-bold hover:bg-slate-200 dark:hover:bg-slate-800">
+                                                {{ $item->is_active ? 'Sembunyikan' : 'Tampilkan' }}
+                                            </button>
+                                        </form>
                                         <a href="{{ route('admin.portfolios.edit', $item) }}" class="px-3 py-1 border border-slate-300 dark:border-slate-700 text-heading text-[10px] uppercase font-bold hover:bg-slate-200 dark:hover:bg-slate-800">
                                             Edit
                                         </a>

@@ -10,6 +10,7 @@ use App\Models\Certification;
 use App\Models\Product;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
@@ -33,18 +34,19 @@ class HomeController extends Controller
 
         $settings = [
             'site_name' => Setting::get('site_name', 'Ady Budisantika — Portofolio & Direktori Tools'),
-            'hero_title' => Setting::get('hero_title', 'PENGEMBANG SOFTWARE FULL STACK & ARSITEK SISTEM'),
-            'hero_subtitle' => Setting::get('hero_subtitle', 'Saya merancang dan membangun aplikasi web modern yang responsif, cepat, dan berkinerja tinggi berbasis Laravel & JavaScript.'),
-            'about_text' => Setting::get('about_text', 'Pengembang Software Full Stack berdedikasi dengan pengalaman luas dalam membangun aplikasi web enterprise, sistem CMS dinamis, serta layanan API yang andal.'),
+            'hero_title' => Setting::get('hero_title', 'SOFTWARE DEVELOPER'),
+            'hero_subtitle' => Setting::get('hero_subtitle', 'Software Developer dengan pengalaman dalam membangun aplikasi web yang efisien dan skalabel. Bersemangat untuk terus belajar dan berkontribusi dalam mengembangkan solusi teknologi inovatif.'),
+            'about_text' => Setting::get('about_text', 'Software Developer dengan pengalaman dalam membangun aplikasi web yang efisien dan skalabel. Bersemangat untuk terus belajar dan berkontribusi dalam mengembangkan solusi teknologi inovatif.'),
+            'skills' => array_values(array_filter(array_map('trim', explode(',', Setting::get('skills', 'jQuery, JavaScript, React.js, CSS, HTML5, MySQL, Laravel, PHP'))))),
             'github_url' => Setting::get('github_url', 'https://github.com/adybudi'),
-            'linkedin_url' => Setting::get('linkedin_url', 'https://linkedin.com/in/adybudi'),
+            'linkedin_url' => Setting::get('linkedin_url', 'https://www.linkedin.com/in/ady-budisantika-2a6814335/'),
             'email' => Setting::get('email', 'ady.budisantika@gmail.com'),
             'hero_avatar' => Setting::get('hero_avatar', 'uploads/profile.webp'),
             'hero_avatars' => $heroAvatars,
             'hero_hover_duration' => (int) Setting::get('hero_hover_duration', '2000'),
             'spline_embed_url' => Setting::get('spline_embed_url', ''),
-            'seo_keywords' => Setting::get('seo_keywords', 'Ady Budisantika, Laravel Developer, Full Stack Engineer, Web App, Software Architect, Tools Hub'),
-            'seo_meta_desc' => Setting::get('seo_meta_desc', 'Portofolio & Tools Hub resmi karya Ady Budisantika. Full Stack Software Engineer spesialis Laravel, Modern JS, dan Arsitektur Cloud.'),
+            'seo_keywords' => Setting::get('seo_keywords', 'Ady Budisantika, Software Developer, Laravel, PHP, JavaScript, React.js, MySQL, Bali'),
+            'seo_meta_desc' => Setting::get('seo_meta_desc', 'Portofolio Ady Budisantika, Software Developer di Bali. Berpengalaman membangun aplikasi web yang efisien dan skalabel.'),
             
             // Dynamic Section Visibility Controls
             'show_portfolio_section'     => Setting::get('show_portfolio_section', '1') === '1',
@@ -63,8 +65,9 @@ class HomeController extends Controller
             'cv_download_count' => (int) Setting::get('cv_download_count', '0'),
         ];
 
-        $portfolios = Portfolio::orderBy('is_featured', 'desc')->latest()->get();
-        $portfolioCategories = Portfolio::select('category')->distinct()->pluck('category')->filter()->values();
+        $portfolios = Portfolio::where('is_active', true)->orderByDesc('is_featured')->orderBy('id')->take(6)->get();
+        $portfolioCategories = $portfolios->pluck('category')->filter()->unique()->values();
+        $totalPortfoliosCount = Portfolio::where('is_active', true)->count();
         $tools = Tool::where('is_active', true)->latest()->take(6)->get();
         $experiences = Experience::orderBy('order', 'asc')->get();
         $certifications = Certification::orderBy('order', 'asc')->get();
@@ -72,7 +75,29 @@ class HomeController extends Controller
         $totalProductsCount = Product::where('is_active', true)->count();
         $services = Service::where('is_active', true)->orderBy('order', 'asc')->get();
 
-        return view('home', compact('settings', 'portfolios', 'portfolioCategories', 'tools', 'experiences', 'certifications', 'latestProducts', 'totalProductsCount', 'services'));
+        return view('home', compact('settings', 'portfolios', 'portfolioCategories', 'totalPortfoliosCount', 'tools', 'experiences', 'certifications', 'latestProducts', 'totalProductsCount', 'services'));
+    }
+
+    /**
+     * Display the standalone Portfolio page with every project.
+     */
+    public function portfolio()
+    {
+        $settings = [
+            'site_name' => Setting::get('site_name', 'Ady Budisantika — Portofolio Proyek'),
+            'github_url' => Setting::get('github_url', 'https://github.com/adybudi'),
+            'linkedin_url' => Setting::get('linkedin_url', 'https://www.linkedin.com/in/ady-budisantika-2a6814335/'),
+            'email' => Setting::get('email', 'ady.budisantika@gmail.com'),
+            'hero_avatar' => Setting::get('hero_avatar', 'uploads/profile.webp'),
+            'seo_keywords' => Setting::get('seo_keywords', 'Ady Budisantika, Software Developer, Laravel, PHP, JavaScript, React.js, MySQL, Bali'),
+            'seo_meta_desc' => 'Kumpulan proyek aplikasi web, e-commerce, company profile, dan sistem informasi karya Ady Budisantika.',
+            'cv_file_path' => Setting::get('cv_file_path', ''),
+        ];
+
+        $portfolios = Portfolio::where('is_active', true)->orderByDesc('is_featured')->orderBy('id')->get();
+        $portfolioCategories = Portfolio::where('is_active', true)->select('category')->distinct()->pluck('category')->filter()->values();
+
+        return view('portfolio', compact('settings', 'portfolios', 'portfolioCategories'));
     }
 
     /**
@@ -83,7 +108,7 @@ class HomeController extends Controller
         $settings = [
             'site_name'    => Setting::get('site_name', 'Ady Budisantika — Jasa & Layanan'),
             'github_url'   => Setting::get('github_url', 'https://github.com/adybudi'),
-            'linkedin_url' => Setting::get('linkedin_url', 'https://linkedin.com/in/adybudi'),
+            'linkedin_url' => Setting::get('linkedin_url', 'https://www.linkedin.com/in/ady-budisantika-2a6814335/'),
             'email'        => Setting::get('email', 'ady.budisantika@gmail.com'),
             'seo_keywords' => Setting::get('seo_keywords', 'Jasa Pembuatan Website, Jasa Laravel, Freelance Developer, Ady Budisantika'),
             'seo_meta_desc'=> Setting::get('seo_meta_desc', 'Katalog jasa & layanan profesional karya Ady Budisantika. Dari pengembangan aplikasi web hingga konsultasi sistem.'),
@@ -103,7 +128,7 @@ class HomeController extends Controller
         $settings = [
             'site_name' => Setting::get('site_name', 'Ady Budisantika — Katalog Produk Digital'),
             'github_url' => Setting::get('github_url', 'https://github.com/adybudi'),
-            'linkedin_url' => Setting::get('linkedin_url', 'https://linkedin.com/in/adybudi'),
+            'linkedin_url' => Setting::get('linkedin_url', 'https://www.linkedin.com/in/ady-budisantika-2a6814335/'),
             'email' => Setting::get('email', 'ady.budisantika@gmail.com'),
             'seo_keywords' => Setting::get('seo_keywords', 'Katalog Produk, Source Code, E-Book, Ady Budisantika, Full Stack Engineer'),
             'seo_meta_desc' => Setting::get('seo_meta_desc', 'Katalog produk digital, source code, dan e-book karya Ady Budisantika.'),
@@ -124,7 +149,7 @@ class HomeController extends Controller
         $settings = [
             'site_name' => Setting::get('site_name', 'Ady Budisantika — Direktori Tools Hub'),
             'github_url' => Setting::get('github_url', 'https://github.com/adybudi'),
-            'linkedin_url' => Setting::get('linkedin_url', 'https://linkedin.com/in/adybudi'),
+            'linkedin_url' => Setting::get('linkedin_url', 'https://www.linkedin.com/in/ady-budisantika-2a6814335/'),
             'email' => Setting::get('email', 'ady.budisantika@gmail.com'),
             'seo_keywords' => Setting::get('seo_keywords', 'Developer Tools, SQL Formatter, Regex Tester, Palette Generator, Ady Budisantika'),
             'seo_meta_desc' => Setting::get('seo_meta_desc', 'Kumpulan perkakas utilitas pengembang, generator, dan alat bantu mikro karya Ady Budisantika.'),

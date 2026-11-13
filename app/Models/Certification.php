@@ -15,6 +15,7 @@ class Certification extends Model
         'icon',
         'description',
         'credential_url',
+        'issue_date',
         'order',
     ];
 }

@@ -18,9 +18,11 @@ class Portfolio extends Model
         'category',
         'tech_stack',
         'is_featured',
+        'is_active',
     ];
 
     protected $casts = [
         'is_featured' => 'boolean',
+        'is_active' => 'boolean',
     ];
 }

@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Banner Layanan A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --navy: #0b0f17;
+        --panel: #0f1622;
+        --ink: #e5e7eb;
+        --muted: #94a3b8;
+        --cyan: #0096c7;
+        --cyan-soft: #48cae4;
+        --line: rgba(148, 163, 184, 0.16);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        background: var(--navy);
+    }
+
+    .banner {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        background: var(--navy);
+        color: var(--ink);
+        font-family: "Plus Jakarta Sans", sans-serif;
+    }
+
+    .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(148, 163, 184, 0.075) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148, 163, 184, 0.075) 1px, transparent 1px);
+        background-size: 64px 64px;
+    }
+
+    .glow {
+        position: absolute;
+        width: 620px;
+        height: 620px;
+        border-radius: 50%;
+        background: rgba(0, 150, 199, 0.22);
+        filter: blur(130px);
+        top: -220px;
+        right: -130px;
+    }
+
+    .glow-bottom {
+        position: absolute;
+        width: 420px;
+        height: 420px;
+        border-radius: 50%;
+        background: rgba(72, 202, 228, 0.10);
+        filter: blur(120px);
+        bottom: -220px;
+        left: 120px;
+    }
+
+    .watermark {
+        position: absolute;
+        right: 24px;
+        top: -96px;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 460px;
+        line-height: 1;
+        letter-spacing: 0.02em;
+        color: rgba(0, 150, 199, 0.065);
+        user-select: none;
+    }
+
+    .frame {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        padding: 56px 72px 44px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--cyan-soft);
+        font-size: 18px;
+        letter-spacing: 0.18em;
+    }
+    .brand-mark span:first-child { color: var(--cyan); }
+    .brand-divider { width: 1px; height: 18px; background: var(--line); }
+
+    .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+    .topbar-right strong { color: var(--cyan-soft); font-weight: 700; }
+
+    .content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 42px;
+        flex: 1;
+        padding-top: 12px;
+    }
+
+    .copy { width: 616px; }
+
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--cyan-soft);
+        margin-bottom: 18px;
+    }
+    .eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 2px;
+        background: var(--cyan);
+    }
+
+    h1 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 98px;
+        line-height: 0.84;
+        letter-spacing: 0.015em;
+        text-transform: uppercase;
+        color: #fff;
+    }
+    h1 .accent { color: var(--cyan-soft); }
+
+    .rule {
+        width: 76px;
+        height: 4px;
+        background: var(--cyan);
+        margin: 24px 0 20px;
+    }
+
+    .lead {
+        max-width: 540px;
+        font-size: 19px;
+        line-height: 1.62;
+        color: var(--muted);
+        font-weight: 400;
+    }
+
+    .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 26px;
+    }
+    .chip {
+        border: 1px solid rgba(0, 150, 199, 0.32);
+        background: rgba(0, 150, 199, 0.08);
+        color: var(--cyan-soft);
+        padding: 7px 11px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .visual {
+        position: relative;
+        width: 470px;
+        height: 340px;
+        flex: 0 0 470px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .browser {
+        position: relative;
+        width: 452px;
+        height: 306px;
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--panel);
+        border: 1px solid rgba(0, 150, 199, 0.38);
+        box-shadow: 0 36px 90px rgba(0, 0, 0, 0.55);
+        transform: rotate(-1.6deg);
+    }
+
+    .browser-top {
+        height: 34px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 14px;
+        background: #111a27;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: #334155; }
+    .url {
+        margin-left: 10px;
+        height: 15px;
+        flex: 1;
+        border-radius: 3px;
+        background: #0b111a;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .browser-body {
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 18px;
+        padding: 22px 20px;
+    }
+
+    .kick { width: 74px; height: 5px; background: var(--cyan); margin-bottom: 12px; }
+    .line { height: 9px; border-radius: 1px; background: #1e293b; margin-bottom: 7px; }
+    .line.big { height: 24px; background: #334155; margin-bottom: 9px; }
+    .line.w90 { width: 90%; }
+    .line.w70 { width: 70%; }
+    .line.w55 { width: 55%; }
+    .line.cyan { background: rgba(0, 150, 199, 0.65); height: 7px; }
+
+    .mock-cta {
+        margin-top: 15px;
+        width: 96px;
+        height: 22px;
+        background: var(--cyan);
+        opacity: 0.9;
+    }
+
+    .mock-cards { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .mock-card {
+        height: 58px;
+        background: #111a27;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        padding: 10px;
+    }
+    .mock-card .bar { height: 6px; background: #334155; margin-bottom: 5px; }
+    .mock-card .bar.short { width: 62%; background: #1e293b; }
+
+    .float-tag {
+        position: absolute;
+        padding: 8px 10px;
+        background: #0b111a;
+        border: 1px solid rgba(0, 150, 199, 0.45);
+        color: var(--cyan-soft);
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .float-tag.one { top: 8px; right: -2px; }
+    .float-tag.two { bottom: 6px; left: -6px; }
+
+    .bottombar {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+    }
+    .bottombar .meta {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        line-height: 1.7;
+    }
+    .bottombar .meta strong { color: var(--ink); }
+    .bottombar .stamp {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 30px;
+        letter-spacing: 0.08em;
+        color: rgba(148, 163, 184, 0.5);
+        text-transform: uppercase;
+    }
+    .bottombar .stamp span { color: var(--cyan); }
+</style>
+</head>
+<body>
+<div class="banner" role="img" aria-label="Banner Layanan Landing Page dan Company Profile A">
+    <div class="grid"></div>
+    <div class="glow"></div>
+    <div class="glow-bottom"></div>
+    <div class="watermark">01</div>
+
+    <div class="frame">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-mark"><span>A</span><span>/</span><span>B</span></div>
+                <div class="brand-divider"></div>
+                <div>Ady Budisantika</div>
+            </div>
+            <div class="topbar-right">
+                <span>Service / 01</span>
+                <strong>Full Stack Engineer</strong>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="copy">
+                <div class="eyebrow">Jasa &amp; Layanan</div>
+                <h1>Landing Page<br><span class="accent">&amp; Company</span><br>Profile</h1>
+                <div class="rule"></div>
+                <p class="lead">
+                    Website profil perusahaan yang cepat, responsif, dan dirancang
+                    untuk membangun kepercayaan serta mengonversi pengunjung menjadi klien.
+                </p>
+                <div class="chips">
+                    <span class="chip">Responsive</span>
+                    <span class="chip">SEO Ready</span>
+                    <span class="chip">WhatsApp CTA</span>
+                    <span class="chip">1 Tahun Hosting</span>
+                </div>
+            </div>
+
+            <div class="visual" aria-hidden="true">
+                <div class="browser">
+                    <div class="browser-top">
+                        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                        <span class="url"></span>
+                    </div>
+                    <div class="browser-body">
+                        <div>
+                            <div class="kick"></div>
+                            <div class="line big w90"></div>
+                            <div class="line big w70"></div>
+                            <div class="line w90" style="margin-top:12px;"></div>
+                            <div class="line w70"></div>
+                            <div class="mock-cta"></div>
+                        </div>
+                        <div class="mock-cards">
+                            <div class="mock-card"><div class="bar"></div><div class="bar short"></div></div>
+                            <div class="mock-card"><div class="bar"></div><div class="bar short"></div></div>
+                            <div class="mock-card"><div class="bar"></div><div class="bar short"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="float-tag one">Mobile First</div>
+                <div class="float-tag two">Fast Loading</div>
+            </div>
+        </main>
+
+        <footer class="bottombar">
+            <div class="meta">
+                <strong>Desain editorial &amp; performa tinggi</strong><br>
+                Laravel · Tailwind CSS · Modern JavaScript
+            </div>
+            <div class="stamp">SERVICE <span>01</span></div>
+        </footer>
+    </div>
+</div>
+</body>
+</html>

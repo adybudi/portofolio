@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Portfolio Banner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --navy: #0b0f17;
+        --panel: #0f1622;
+        --ink: #e5e7eb;
+        --muted: #94a3b8;
+        --cyan: #0096c7;
+        --cyan-soft: #48cae4;
+        --line: rgba(148, 163, 184, 0.16);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 1280px; height: 720px; overflow: hidden; background: var(--navy); }
+
+    .banner {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        background: var(--navy);
+        color: var(--ink);
+        font-family: "Plus Jakarta Sans", sans-serif;
+    }
+    .grid {
+        position: absolute; inset: 0;
+        background-image:
+            linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+        background-size: 64px 64px;
+    }
+    .glow {
+        position: absolute; width: 680px; height: 680px; border-radius: 50%;
+        background: rgba(0, 150, 199, 0.20); filter: blur(140px);
+        right: -160px; top: -240px;
+    }
+    .watermark {
+        position: absolute; right: 26px; top: -90px;
+        font-family: "Bebas Neue", sans-serif; font-size: 440px; line-height: 1;
+        color: rgba(0, 150, 199, 0.06); letter-spacing: 0.02em; user-select: none;
+    }
+
+    .frame {
+        position: relative; z-index: 2; height: 100%;
+        padding: 54px 72px 42px;
+        display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.24em;
+        text-transform: uppercase; color: var(--muted);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark { display: inline-flex; gap: 6px; color: var(--cyan-soft); font-size: 18px; letter-spacing: 0.18em; }
+    .brand-mark span:first-child { color: var(--cyan); }
+    .brand-divider { width: 1px; height: 18px; background: var(--line); }
+    .topbar strong { color: var(--cyan-soft); }
+
+    .content {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 36px; flex: 1; padding-top: 8px;
+    }
+    .copy { width: 640px; min-width: 0; }
+    .eyebrow {
+        display: inline-flex; align-items: center; gap: 10px;
+        font-size: 10px; font-weight: 800; letter-spacing: 0.22em;
+        text-transform: uppercase; color: var(--cyan-soft); margin-bottom: 14px;
+    }
+    .eyebrow::before { content: ""; width: 34px; height: 2px; background: var(--cyan); }
+    h1 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 78px; line-height: 0.85; text-transform: uppercase;
+        color: #fff; letter-spacing: 0.015em;
+    }
+    h1 .accent { color: var(--cyan-soft); }
+    .rule { width: 70px; height: 4px; background: var(--cyan); margin: 20px 0 16px; }
+    .lead { max-width: 580px; font-size: 16px; line-height: 1.55; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 20px; }
+    .chip {
+        border: 1px solid rgba(0, 150, 199, 0.30);
+        background: rgba(0, 150, 199, 0.08);
+        color: var(--cyan-soft); padding: 6px 10px;
+        font-size: 9px; font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase;
+    }
+
+    .visual { width: 460px; flex: 0 0 460px; position: relative; }
+    .panel {
+        position: relative; width: 450px; height: 318px;
+        border: 1px solid rgba(0, 150, 199, 0.36);
+        background: var(--panel); border-radius: 10px;
+        box-shadow: 0 34px 90px rgba(0, 0, 0, 0.52);
+        overflow: hidden;
+    }
+    .panel-top {
+        height: 32px; display: flex; align-items: center; gap: 6px; padding: 0 14px;
+        background: #111a27; border-bottom: 1px solid var(--line);
+    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: #334155; }
+    .panel-label {
+        margin-left: 8px; font-size: 8px; font-weight: 800; letter-spacing: 0.16em;
+        text-transform: uppercase; color: var(--muted);
+    }
+    .panel-body { padding: 20px; }
+
+    .motif { display: none; }
+    .motif.active { display: block; }
+
+    /* E-commerce motif */
+    .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .product {
+        height: 88px; background: #111a27; border: 1px solid var(--line);
+        padding: 9px; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .product .thumb { height: 38px; background: #1e293b; border: 1px solid rgba(148,163,184,.12); }
+    .product .bar { height: 5px; background: #334155; }
+    .product .bar.short { width: 62%; background: #1e293b; }
+    .cart-row {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-top: 12px; padding: 10px 12px; background: #111a27; border: 1px solid var(--line);
+    }
+    .cart-row .bar { width: 45%; height: 7px; background: #334155; }
+    .cart-row .cta { width: 76px; height: 22px; background: var(--cyan); }
+
+    /* Dashboard motif */
+    .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .kpi { height: 48px; background: #111a27; border: 1px solid var(--line); padding: 8px; }
+    .kpi .bar { height: 5px; background: #334155; margin-bottom: 5px; }
+    .kpi .bar.short { width: 55%; background: #1e293b; }
+    .chart { position: relative; height: 138px; margin-top: 12px; border: 1px solid var(--line); background: #111a27; padding: 12px; display: flex; align-items: flex-end; gap: 9px; }
+    .chart .col { flex: 1; background: rgba(0,150,199,.35); }
+    .chart .col:nth-child(2) { background: rgba(0,150,199,.55); }
+    .chart .col:nth-child(3) { background: rgba(0,150,199,.75); }
+    .chart .col:nth-child(4) { background: rgba(72,202,228,.55); }
+    .chart .col:nth-child(5) { background: rgba(0,150,199,.85); }
+    .chart .line { position: absolute; left: 12px; right: 12px; top: 38px; height: 1px; background: rgba(72,202,228,.5); transform: rotate(-6deg); }
+
+    /* SaaS motif */
+    .kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .column { background: #111a27; border: 1px solid var(--line); padding: 8px; }
+    .column .head { height: 5px; background: #334155; margin-bottom: 8px; }
+    .card { height: 38px; background: #0b111a; border: 1px solid rgba(148,163,184,.12); margin-bottom: 6px; padding: 6px; }
+    .card .bar { height: 4px; background: #334155; margin-bottom: 4px; }
+    .card .bar.short { width: 60%; background: #1e293b; }
+    .column:nth-child(2) .head { background: var(--cyan); }
+
+    /* API motif */
+    .terminal { background: #0b111a; border: 1px solid var(--line); padding: 12px; font-family: ui-monospace, monospace; font-size: 9px; line-height: 1.9; color: var(--muted); }
+    .terminal .method { color: var(--cyan-soft); font-weight: 700; }
+    .terminal .ok { color: #34d399; }
+    .api-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding: 9px 11px; background: #111a27; border: 1px solid var(--line); }
+    .api-row .bar { width: 48%; height: 6px; background: #334155; }
+    .api-row .lock { width: 20px; height: 20px; border: 1px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--cyan-soft); font-size: 8px; }
+
+    .float-tag {
+        position: absolute; padding: 7px 9px; background: #0b111a;
+        border: 1px solid rgba(0, 150, 199, 0.45); color: var(--cyan-soft);
+        font-size: 8px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase;
+    }
+    .float-tag.one { top: 6px; right: -2px; }
+    .float-tag.two { bottom: 4px; left: -6px; }
+
+    .footer {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        border-top: 1px solid var(--line); padding-top: 16px;
+    }
+    .footer .meta { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); line-height: 1.7; }
+    .footer .meta strong { color: var(--ink); }
+    .footer .stamp { font-family: "Bebas Neue", sans-serif; font-size: 28px; letter-spacing: 0.08em; color: rgba(148,163,184,.5); text-transform: uppercase; }
+    .footer .stamp span { color: var(--cyan); }
+</style>
+</head>
+<body>
+<div class="banner" id="banner" role="img" aria-label="Portfolio banner">
+    <div class="grid"></div>
+    <div class="glow"></div>
+    <div class="watermark" id="watermark">01</div>
+
+    <div class="frame">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-mark"><span>A</span><span>/</span><span>B</span></div>
+                <div class="brand-divider"></div>
+                <div>Ady Budisantika</div>
+            </div>
+            <div>Project / <strong id="projectNo">01</strong></div>
+        </header>
+
+        <main class="content">
+            <div class="copy">
+                <div class="eyebrow" id="eyebrow">Aplikasi Web</div>
+                <h1 id="title">Enterprise<br><span class="accent">E-Commerce</span><br>Engine</h1>
+                <div class="rule"></div>
+                <p class="lead" id="lead">Platform toko online berkinerja tinggi dengan alur checkout yang jelas dan admin yang mudah digunakan.</p>
+                <div class="chips" id="chips"></div>
+            </div>
+
+            <div class="visual" aria-hidden="true">
+                <div class="panel">
+                    <div class="panel-top">
+                        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                        <span class="panel-label" id="panelLabel">E-Commerce</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="motif motif-ecommerce active" id="motif-ecommerce">
+                            <div class="product-grid">
+                                <div class="product"><div class="thumb"></div><div class="bar"></div><div class="bar short"></div></div>
+                                <div class="product"><div class="thumb"></div><div class="bar"></div><div class="bar short"></div></div>
+                                <div class="product"><div class="thumb"></div><div class="bar"></div><div class="bar short"></div></div>
+                            </div>
+                            <div class="cart-row"><div class="bar"></div><div class="cta"></div></div>
+                        </div>
+
+                        <div class="motif motif-dashboard" id="motif-dashboard">
+                            <div class="kpis">
+                                <div class="kpi"><div class="bar"></div><div class="bar short"></div></div>
+                                <div class="kpi"><div class="bar"></div><div class="bar short"></div></div>
+                                <div class="kpi"><div class="bar"></div><div class="bar short"></div></div>
+                            </div>
+                            <div class="chart">
+                                <div class="col" style="height:42%"></div>
+                                <div class="col" style="height:68%"></div>
+                                <div class="col" style="height:54%"></div>
+                                <div class="col" style="height:82%"></div>
+                                <div class="col" style="height:72%"></div>
+                                <div class="line"></div>
+                            </div>
+                        </div>
+
+                        <div class="motif motif-saas" id="motif-saas">
+                            <div class="kanban">
+                                <div class="column"><div class="head"></div><div class="card"><div class="bar"></div><div class="bar short"></div></div><div class="card"><div class="bar"></div><div class="bar short"></div></div></div>
+                                <div class="column"><div class="head"></div><div class="card"><div class="bar"></div><div class="bar short"></div></div><div class="card"><div class="bar"></div><div class="bar short"></div></div></div>
+                                <div class="column"><div class="head"></div><div class="card"><div class="bar"></div><div class="bar short"></div></div></div>
+                            </div>
+                        </div>
+
+                        <div class="motif motif-api" id="motif-api">
+                            <div class="terminal">
+                                <div><span class="method">GET</span> /api/v1/projects <span class="ok">200 OK</span></div>
+                                <div><span class="method">POST</span> /api/v1/auth/token <span class="ok">201 OK</span></div>
+                                <div><span class="method">GET</span> /api/v1/users/me <span class="ok">200 OK</span></div>
+                            </div>
+                            <div class="api-row"><div class="bar"></div><div class="lock">✓</div></div>
+                            <div class="api-row"><div class="bar"></div><div class="lock">✓</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="float-tag one" id="tagOne">Responsive</div>
+                <div class="float-tag two" id="tagTwo">Production Ready</div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="meta">
+                <strong id="footerTitle">Studi Kasus / Aplikasi Web</strong><br>
+                Laravel · Tailwind CSS · Modern JavaScript
+            </div>
+            <div class="stamp">PROJECT <span id="footerNo">01</span></div>
+        </footer>
+    </div>
+</div>
+
+<script>
+    const projects = {
+        ecommerce: {
+            no: '01',
+            eyebrow: 'Aplikasi Web / E-Commerce',
+            title: 'Enterprise<br><span class="accent">E-Commerce</span><br>Engine',
+            lead: 'Platform toko online berkinerja tinggi dengan alur checkout yang jelas dan admin yang mudah digunakan.',
+            chips: ['Laravel', 'Midtrans', 'Tailwind', 'MySQL'],
+            panelLabel: 'E-Commerce',
+            motif: 'ecommerce',
+            tagOne: 'Checkout Flow',
+            tagTwo: 'Admin Ready',
+            footerTitle: 'Studi Kasus / Aplikasi Web',
+        },
+        dashboard: {
+            no: '02',
+            eyebrow: 'Aplikasi Fullstack / Data',
+            title: 'Dashboard<br><span class="accent">Analitik</span><br>& Tools AI',
+            lead: 'Monitoring metrik real-time, visualisasi data, dan asisten AI untuk mempercepat pengambilan keputusan.',
+            chips: ['Laravel', 'OpenAI', 'Chart.js', 'Redis'],
+            panelLabel: 'Analytics',
+            motif: 'dashboard',
+            tagOne: 'Real-time',
+            tagTwo: 'AI Assisted',
+            footerTitle: 'Studi Kasus / Data Platform',
+        },
+        saas: {
+            no: '03',
+            eyebrow: 'Platform SaaS / Productivity',
+            title: 'SaaS Hub<br><span class="accent">Manajemen</span><br>Proyek',
+            lead: 'Ruang kerja kolaboratif dengan papan Kanban, peran tim, dan alur kerja yang dapat disesuaikan.',
+            chips: ['Laravel', 'Alpine.js', 'MySQL', 'Queue'],
+            panelLabel: 'Workspace',
+            motif: 'saas',
+            tagOne: 'Team Roles',
+            tagTwo: 'Kanban Board',
+            footerTitle: 'Studi Kasus / SaaS Platform',
+        },
+        api: {
+            no: '04',
+            eyebrow: 'Backend API / Integration',
+            title: 'Gateway<br><span class="accent">RESTful API</span><br>& OAuth',
+            lead: 'Gateway API mikroservis dengan autentikasi OAuth, pembatasan laju, dan dokumentasi yang siap integrasi.',
+            chips: ['Laravel', 'OAuth 2.0', 'Sanctum', 'Redis'],
+            panelLabel: 'API Gateway',
+            motif: 'api',
+            tagOne: 'OAuth 2.0',
+            tagTwo: 'Rate Limited',
+            footerTitle: 'Studi Kasus / Backend API',
+        },
+    };
+
+    const key = new URLSearchParams(location.search).get('project') || 'ecommerce';
+    const p = projects[key] || projects.ecommerce;
+
+    document.getElementById('watermark').textContent = p.no;
+    document.getElementById('projectNo').textContent = p.no;
+    document.getElementById('footerNo').textContent = p.no;
+    document.getElementById('eyebrow').textContent = p.eyebrow;
+    document.getElementById('title').innerHTML = p.title;
+    document.getElementById('lead').textContent = p.lead;
+    document.getElementById('chips').innerHTML = p.chips.map(c => `<span class="chip">${c}</span>`).join('');
+    document.getElementById('panelLabel').textContent = p.panelLabel;
+    document.getElementById('tagOne').textContent = p.tagOne;
+    document.getElementById('tagTwo').textContent = p.tagTwo;
+    document.getElementById('footerTitle').textContent = p.footerTitle;
+    document.querySelectorAll('.motif').forEach(m => m.classList.remove('active'));
+    document.getElementById('motif-' + p.motif).classList.add('active');
+    document.getElementById('banner').setAttribute('aria-label', 'Banner proyek ' + p.eyebrow);
+</script>
+</body>
+</html>

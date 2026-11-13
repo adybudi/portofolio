@@ -1,5 +1,5 @@
 <x-layouts.app-public :settings="$settings">
-    
+
     <!-- Services Hero Banner Section -->
     <section class="py-12 sm:py-16 relative border-b border-slate-200 dark:border-slate-800 bg-[#edeef1]/50 dark:bg-[#111622]/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -12,7 +12,7 @@
                 </h1>
                 <div class="accent-line"></div>
                 <p class="text-sm sm:text-base text-subtext leading-relaxed font-light">
-                    Layanan jasa pengembangan website, aplikasi, dan konsultasi sistem yang saya tawarkan secara profesional. 
+                    Layanan jasa pengembangan website, aplikasi, dan konsultasi sistem yang saya tawarkan secara profesional.
                     Hubungi saya untuk mendiskusikan kebutuhan proyek Anda.
                 </p>
             </div>
@@ -25,35 +25,31 @@
 
             @if($services->isEmpty())
                 <!-- Empty State -->
-                <div class="text-center py-24 border border-dashed border-slate-300 dark:border-slate-700">
-                    <svg class="w-14 h-14 mx-auto text-subtext mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    <p class="text-subtext text-sm font-semibold uppercase tracking-widest">Belum ada jasa yang tersedia saat ini.</p>
-                    <a href="{{ route('home') }}#contact" class="mt-4 inline-block px-6 py-2.5 bg-[#0096c7] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#0077b6] transition-all">
-                        Hubungi Saya
-                    </a>
+                <div class="col-span-full editorial-card p-12 text-center text-subtext text-xs uppercase">
+                    Belum ada jasa yang dipublikasikan.
                 </div>
             @else
                 <!-- Services Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                @php $featuredService = $services->count() === 1; @endphp
+                <div class="grid grid-cols-1 {{ $featuredService ? 'max-w-5xl mx-auto' : 'sm:grid-cols-2 lg:grid-cols-3' }} gap-6 sm:gap-8">
                     @foreach($services as $service)
-                    <div class="editorial-card editorial-card-hover rounded-none flex flex-col group">
+                    @php $isFeaturedCard = $featuredService && $service->image; @endphp
+                    <div class="editorial-card editorial-card-hover rounded-none flex flex-col group {{ $isFeaturedCard ? 'md:flex-row' : '' }}">
                         <!-- Thumbnail -->
-                        <div class="aspect-video w-full overflow-hidden bg-slate-200 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+                        <div class="aspect-video w-full overflow-hidden bg-slate-200 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 {{ $isFeaturedCard ? 'md:w-1/2 md:shrink-0 md:border-b-0 md:border-r' : '' }}">
                             @if($service->image)
-                                <img src="{{ uploaded_asset($service->image) }}" alt="{{ $service->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500">
+                                <img src="{{ uploaded_asset($service->image) }}" alt="{{ $service->title }}" loading="lazy" decoding="async" class="w-full h-full {{ $isFeaturedCard ? 'object-contain bg-[#0b0f17]' : 'object-cover' }} group-hover:scale-105 transition-all duration-500">
                             @else
-                                <div class="w-full h-full flex items-center justify-center">
-                                    <svg class="w-10 h-10 text-[#0096c7]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                    </svg>
+                                <div class="relative w-full h-full overflow-hidden bg-[#0b0f17] p-5 flex flex-col justify-between">
+                                    <span class="relative text-[9px] font-mono font-bold uppercase tracking-widest text-[#48cae4]">Layanan</span>
+                                    <span class="relative font-display text-2xl font-bold uppercase leading-none text-white line-clamp-2">{{ $service->title }}</span>
+                                    <span class="relative text-[8px] font-mono font-bold uppercase tracking-[0.2em] text-slate-400">Ady Budisantika</span>
                                 </div>
                             @endif
                         </div>
 
                         <!-- Content -->
-                        <div class="p-5 flex flex-col flex-1">
+                        <div class="p-5 flex flex-col flex-1 {{ $isFeaturedCard ? 'md:w-1/2 md:justify-between lg:p-8' : '' }}">
                             <div class="flex-1 space-y-3">
                                 <h2 class="font-extrabold text-heading text-sm uppercase tracking-tight group-hover:text-[#0096c7] transition-colors leading-snug">
                                     {{ $service->title }}
@@ -81,6 +77,9 @@
                                 <div class="flex items-end justify-between gap-3">
                                     <div>
                                         @if($service->price)
+                                            <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#0096c7] block mb-0.5">
+                                                MULAI DARI
+                                            </span>
                                             @if($service->has_discount && $service->discount_price)
                                                 <span class="block text-[11px] line-through text-subtext font-mono">
                                                     Rp {{ number_format($service->price, 0, ',', '.') }}

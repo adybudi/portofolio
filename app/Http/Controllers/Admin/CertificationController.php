@@ -22,6 +22,7 @@ class CertificationController extends Controller
             'icon' => 'nullable|string|max:10',
             'description' => 'nullable|string',
             'credential_url' => 'nullable|url|max:500',
+            'issue_date' => 'nullable|string|max:100',
             'order' => 'nullable|integer',
         ]);
 
@@ -38,6 +39,7 @@ class CertificationController extends Controller
             'icon' => 'nullable|string|max:10',
             'description' => 'nullable|string',
             'credential_url' => 'nullable|url|max:500',
+            'issue_date' => 'nullable|string|max:100',
             'order' => 'nullable|integer',
         ]);
 

@@ -136,10 +136,14 @@ class NewFeaturesTest extends TestCase
             'icon' => '☸️',
             'description' => 'Container Orchestration Mastery',
             'credential_url' => 'https://cncf.io',
+            'issue_date' => '2025-05-01',
             'order' => 1,
         ]);
         $certResponse->assertRedirect(route('admin.certifications.index'));
-        $this->assertDatabaseHas('certifications', ['name' => 'Kubernetes Certified Engineer']);
+        $this->assertDatabaseHas('certifications', [
+            'name' => 'Kubernetes Certified Engineer',
+            'issue_date' => '2025-05-01',
+        ]);
     }
 
     public function test_registration_is_protected_when_admin_exists_and_disabled(): void

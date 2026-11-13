@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +50,21 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+
+        // Never allow the final administrator to delete their own account,
+        // otherwise the CMS becomes permanently inaccessible.
+        if ($user->is_admin) {
+            $otherAdmins = User::query()
+                ->where('is_admin', true)
+                ->whereKeyNot($user->getKey())
+                ->count();
+
+            if ($otherAdmins === 0) {
+                return Redirect::route('profile.edit')->withErrors([
+                    'password' => 'Akun administrator terakhir tidak dapat dihapus. Buat admin lain terlebih dahulu.',
+                ], 'userDeletion');
+            }
+        }
 
         Auth::logout();
 

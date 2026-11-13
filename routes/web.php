@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\DashboardRedirectController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PortfolioController;
@@ -23,10 +25,12 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [HomeController::class, 'products'])->name('products.index');
+Route::get('/portfolio', [HomeController::class, 'portfolio'])->name('portfolio.index');
 Route::get('/tools', [HomeController::class, 'tools'])->name('tools.index');
 Route::get('/tools/{tool:slug}/launch', [HomeController::class, 'launchTool'])->name('tools.launch');
 Route::get('/download-cv', [HomeController::class, 'downloadCv'])->name('cv.download');
 Route::get('/services', [HomeController::class, 'services'])->name('services.index');
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::post('/contact/send', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.send');
 
 /*
@@ -38,9 +42,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // CRUD Modules
-    Route::resource('portfolios', PortfolioController::class);
-    Route::resource('products', ProductController::class);
-    Route::resource('services', ServiceController::class);
+    // These controllers intentionally do not expose a public "show" page in the CMS.
+    Route::resource('portfolios', PortfolioController::class)->except(['show']);
+    Route::patch('portfolios/{portfolio}/toggle', [PortfolioController::class, 'toggleStatus'])->name('portfolios.toggle');
+    Route::resource('products', ProductController::class)->except(['show']);
+    Route::resource('services', ServiceController::class)->except(['show']);
     Route::patch('services/{service}/toggle', [ServiceController::class, 'toggleStatus'])->name('services.toggle');
     Route::resource('tools', ToolController::class);
     Route::resource('experiences', ExperienceController::class)->except(['create', 'edit', 'show']);
@@ -65,10 +71,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/settings/hero-photos/{index}', [SettingController::class, 'deleteHeroPhoto'])->name('settings.hero_photos.delete');
 });
 
-// Alias for Laravel Breeze default auth tests
-Route::get('/dashboard', function () {
-    return redirect()->route('admin.dashboard');
-})->middleware(['auth'])->name('dashboard');
+// Alias for Laravel Breeze default auth tests.
+// Non-admin users are sent home instead of being trapped in a 403 response.
+Route::get('/dashboard', DashboardRedirectController::class)
+    ->middleware(['auth'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

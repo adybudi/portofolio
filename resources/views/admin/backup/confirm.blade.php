@@ -12,13 +12,17 @@
             <div class="border-b border-amber-500/30 pb-4">
                 <span class="px-2.5 py-1 bg-amber-500/15 border border-amber-500/40 text-amber-600 dark:text-amber-400 text-[10px] font-mono font-bold uppercase inline-flex items-center gap-1">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    <span>Konfirmasi Prosedur Import Destruktif</span>
+                    <span>Konfirmasi Prosedur Import Data</span>
                 </span>
                 <h2 class="font-display text-2xl font-bold uppercase text-heading mt-2">
                     Verifikasi Keamanan Import
                 </h2>
                 <p class="text-xs text-subtext leading-relaxed mt-1">
                     File backup telah divalidasi dan siap di-sinkronisasikan ke dalam database. Harap periksa ringkasan jumlah data berikut sebelum melanjutkan.
+                </p>
+                <p class="text-[11px] text-subtext leading-relaxed mt-2 p-3 border border-emerald-500/30 bg-emerald-500/5">
+                    <strong class="text-emerald-600 dark:text-emerald-400">Import bersifat non-destruktif.</strong>
+                    Data yang tidak ada di dalam file backup <strong>tidak akan dihapus</strong>. Record dengan slug/judul yang sama akan diperbarui, sehingga import ulang tidak menggandakan data.
                 </p>
             </div>
 

@@ -22,24 +22,25 @@ class SettingController extends Controller
             }
         }
         if (empty($heroAvatars)) {
-            $fallback = Setting::get('hero_avatar', 'uploads/profile.png');
+            $fallback = Setting::get('hero_avatar', 'uploads/profile.webp');
             $heroAvatars = [$fallback];
         }
 
         $settings = [
             'site_name' => Setting::get('site_name', 'Ady Budisantika — Portofolio & Direktori Tools'),
-            'hero_title' => Setting::get('hero_title', 'PENGEMBANG SOFTWARE FULL STACK & ARSITEK SISTEM'),
-            'hero_subtitle' => Setting::get('hero_subtitle', 'Saya merancang dan membangun aplikasi web modern yang responsif, cepat, dan berkinerja tinggi berbasis Laravel & JavaScript.'),
-            'about_text' => Setting::get('about_text', 'Pengembang Software Full Stack berdedikasi dengan pengalaman luas dalam membangun aplikasi web enterprise, sistem CMS dinamis, serta layanan API yang andal.'),
+            'hero_title' => Setting::get('hero_title', 'SOFTWARE DEVELOPER'),
+            'hero_subtitle' => Setting::get('hero_subtitle', 'Software Developer dengan pengalaman dalam membangun aplikasi web yang efisien dan skalabel. Bersemangat untuk terus belajar dan berkontribusi dalam mengembangkan solusi teknologi inovatif.'),
+            'about_text' => Setting::get('about_text', 'Software Developer dengan pengalaman dalam membangun aplikasi web yang efisien dan skalabel. Bersemangat untuk terus belajar dan berkontribusi dalam mengembangkan solusi teknologi inovatif.'),
+            'skills' => Setting::get('skills', 'jQuery, JavaScript, React.js, CSS, HTML5, MySQL, Laravel, PHP'),
             'github_url' => Setting::get('github_url', 'https://github.com/adybudi'),
-            'linkedin_url' => Setting::get('linkedin_url', 'https://linkedin.com/in/adybudi'),
+            'linkedin_url' => Setting::get('linkedin_url', 'https://www.linkedin.com/in/ady-budisantika-2a6814335/'),
             'email' => Setting::get('email', 'ady.budisantika@gmail.com'),
-            'hero_avatar' => Setting::get('hero_avatar', 'uploads/profile.png'),
+            'hero_avatar' => Setting::get('hero_avatar', 'uploads/profile.webp'),
             'hero_avatars' => $heroAvatars,
             'hero_hover_duration' => Setting::get('hero_hover_duration', '2000'),
             'spline_embed_url' => Setting::get('spline_embed_url', ''),
-            'seo_keywords' => Setting::get('seo_keywords', 'Ady Budisantika, Laravel Developer, Full Stack Engineer, Web App, Software Architect, Tools Hub'),
-            'seo_meta_desc' => Setting::get('seo_meta_desc', 'Portofolio & Tools Hub resmi karya Ady Budisantika.'),
+            'seo_keywords' => Setting::get('seo_keywords', 'Ady Budisantika, Software Developer, Laravel, PHP, JavaScript, React.js, MySQL, Bali'),
+            'seo_meta_desc' => Setting::get('seo_meta_desc', 'Portofolio Ady Budisantika, Software Developer di Bali.'),
             'cv_file_path' => Setting::get('cv_file_path', ''),
             'cv_download_count' => (int) Setting::get('cv_download_count', '0'),
             'enable_public_registration' => Setting::get('enable_public_registration', '0') === '1',
@@ -51,6 +52,12 @@ class SettingController extends Controller
             'show_experience_section'    => Setting::get('show_experience_section', '1') === '1',
             'show_certifications_section'=> Setting::get('show_certifications_section', '1') === '1',
             'show_contact_section'       => Setting::get('show_contact_section', '1') === '1',
+
+            // Maintenance Mode Settings
+            'maintenance_mode_enabled'   => Setting::get('maintenance_mode_enabled', '0') === '1',
+            'maintenance_title'          => Setting::get('maintenance_title', 'Situs Sedang Dalam Pemeliharaan'),
+            'maintenance_message'        => Setting::get('maintenance_message', 'Kami sedang melakukan pembaruan sistem untuk memberikan pengalaman yang lebih baik. Silakan kembali lagi beberapa saat lagi.'),
+            'maintenance_until'          => Setting::get('maintenance_until', ''),
 
             // Impact Stats & Quote Settings
             'stat_years_experience' => Setting::get('stat_years_experience', '5+'),
@@ -143,6 +150,7 @@ class SettingController extends Controller
             'hero_title' => 'required|string|max:255',
             'hero_subtitle' => 'required|string',
             'about_text' => 'required|string',
+            'skills' => 'nullable|string|max:1000',
             'github_url' => 'nullable|url|max:255',
             'linkedin_url' => 'nullable|url|max:255',
             'email' => 'nullable|email|max:255',
@@ -153,6 +161,9 @@ class SettingController extends Controller
             'stat_projects_completed' => 'nullable|string|max:50',
             'stat_satisfied_clients' => 'nullable|string|max:50',
             'editorial_quote' => 'nullable|string',
+            'maintenance_title' => 'nullable|string|max:255',
+            'maintenance_message' => 'nullable|string|max:1000',
+            'maintenance_until' => 'nullable|string|max:255',
             'cv_file' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
@@ -163,11 +174,13 @@ class SettingController extends Controller
             $path = $file->storeAs('uploads/cv', $filename, 'public');
 
             try {
-                $publicCvDir = public_path('uploads/cv');
-                if (!file_exists($publicCvDir)) {
-                    @mkdir($publicCvDir, 0755, true);
+                if (!app()->runningUnitTests()) {
+                    $publicCvDir = public_path('uploads/cv');
+                    if (!file_exists($publicCvDir)) {
+                        @mkdir($publicCvDir, 0755, true);
+                    }
+                    @copy($file->getRealPath(), $publicCvDir . '/' . $filename);
                 }
-                @copy($file->getRealPath(), $publicCvDir . '/' . $filename);
             } catch (\Throwable $e) {}
             
             if ($oldCv && $oldCv !== $path) {
@@ -177,19 +190,20 @@ class SettingController extends Controller
             Setting::set('cv_file_path', $path);
         }
 
-        foreach (['site_name', 'hero_title', 'hero_subtitle', 'about_text', 'github_url', 'linkedin_url', 'email', 'spline_embed_url', 'seo_keywords', 'seo_meta_desc', 'stat_years_experience', 'stat_projects_completed', 'stat_satisfied_clients', 'editorial_quote'] as $key) {
+        foreach (['site_name', 'hero_title', 'hero_subtitle', 'about_text', 'skills', 'github_url', 'linkedin_url', 'email', 'spline_embed_url', 'seo_keywords', 'seo_meta_desc', 'stat_years_experience', 'stat_projects_completed', 'stat_satisfied_clients', 'editorial_quote', 'maintenance_title', 'maintenance_message', 'maintenance_until'] as $key) {
             if (isset($validated[$key])) {
                 Setting::set($key, $validated[$key]);
             }
         }
 
         Setting::set('enable_public_registration', $request->has('enable_public_registration') ? '1' : '0');
+        Setting::set('maintenance_mode_enabled', $request->has('maintenance_mode_enabled') ? '1' : '0');
 
         // Checkboxes for Section Visibilities
         foreach (['show_portfolio_section', 'show_products_section', 'show_services_section', 'show_experience_section', 'show_certifications_section', 'show_contact_section'] as $sectionKey) {
             Setting::set($sectionKey, $request->has($sectionKey) ? '1' : '0');
         }
 
-        return redirect()->route('admin.settings.index')->with('success', 'Pengaturan profil, CV, statistik, dan visibilitas section berhasil diperbarui.');
+        return redirect()->route('admin.settings.index')->with('success', 'Pengaturan profil, CV, statistik, mode pemeliharaan, dan visibilitas section berhasil diperbarui.');
     }
 }

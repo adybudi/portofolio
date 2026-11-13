@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Banner Hero Jasa & Layanan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --navy: #0b0f17;
+        --ink: #e5e7eb;
+        --muted: #94a3b8;
+        --cyan: #0096c7;
+        --cyan-soft: #48cae4;
+        --line: rgba(148, 163, 184, 0.16);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 1280px; height: 540px; overflow: hidden; background: var(--navy); }
+
+    .banner {
+        position: relative;
+        width: 1280px;
+        height: 540px;
+        overflow: hidden;
+        background: var(--navy);
+        color: var(--ink);
+        font-family: "Plus Jakarta Sans", sans-serif;
+    }
+
+    .grid {
+        position: absolute; inset: 0;
+        background-image:
+            linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+        background-size: 64px 64px;
+    }
+
+    .glow {
+        position: absolute;
+        width: 620px; height: 620px; border-radius: 50%;
+        background: rgba(0, 150, 199, 0.20);
+        filter: blur(130px);
+        right: -140px; top: -260px;
+    }
+
+    .watermark {
+        position: absolute;
+        right: 28px;
+        bottom: -130px;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 420px;
+        line-height: 1;
+        color: rgba(0, 150, 199, 0.06);
+        letter-spacing: 0.02em;
+        user-select: none;
+    }
+
+    .frame {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        padding: 44px 72px 34px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.24em;
+        text-transform: uppercase; color: var(--muted);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark { display: inline-flex; gap: 6px; color: var(--cyan-soft); font-size: 18px; letter-spacing: 0.18em; }
+    .brand-mark span:first-child { color: var(--cyan); }
+    .brand-divider { width: 1px; height: 18px; background: var(--line); }
+    .topbar strong { color: var(--cyan-soft); }
+
+    .main {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 54px;
+        flex: 1;
+        padding-top: 4px;
+    }
+
+    .copy { width: 620px; }
+    .eyebrow {
+        display: inline-flex; align-items: center; gap: 10px;
+        font-size: 10px; font-weight: 800; letter-spacing: 0.22em;
+        text-transform: uppercase; color: var(--cyan-soft); margin-bottom: 14px;
+    }
+    .eyebrow::before { content: ""; width: 34px; height: 2px; background: var(--cyan); }
+
+    h1 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 96px;
+        line-height: 0.84;
+        text-transform: uppercase;
+        color: #fff;
+        letter-spacing: 0.015em;
+    }
+    h1 .accent { color: var(--cyan-soft); }
+
+    .lead {
+        margin-top: 16px;
+        max-width: 540px;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--muted);
+    }
+
+    .pillars {
+        width: 430px;
+        display: grid;
+        gap: 10px;
+    }
+    .pillar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        background: rgba(15, 22, 34, 0.55);
+    }
+    .pillar .num {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 28px;
+        color: var(--cyan);
+        line-height: 1;
+        flex: 0 0 36px;
+    }
+    .pillar .text strong {
+        display: block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+    .pillar .text span {
+        display: block;
+        margin-top: 3px;
+        font-size: 9px;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+    .pillar.active {
+        border-color: rgba(0, 150, 199, 0.48);
+        background: rgba(0, 150, 199, 0.08);
+    }
+    .pillar.active .num { color: var(--cyan-soft); }
+
+    .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-top: 1px solid var(--line);
+        padding-top: 14px;
+    }
+    .footer .meta {
+        font-size: 9px; font-weight: 700; letter-spacing: 0.18em;
+        text-transform: uppercase; color: var(--muted); line-height: 1.7;
+    }
+    .footer .meta strong { color: var(--ink); }
+    .footer .stamp {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 26px; letter-spacing: 0.08em;
+        color: rgba(148, 163, 184, 0.5); text-transform: uppercase;
+    }
+    .footer .stamp span { color: var(--cyan); }
+</style>
+</head>
+<body>
+<div class="banner" role="img" aria-label="Banner Hero Jasa dan Layanan">
+    <div class="grid"></div>
+    <div class="glow"></div>
+    <div class="watermark">SERVICES</div>
+
+    <div class="frame">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-mark"><span>A</span><span>/</span><span>B</span></div>
+                <div class="brand-divider"></div>
+                <div>Ady Budisantika</div>
+            </div>
+            <div>Katalog / <strong>2026</strong></div>
+        </header>
+
+        <main class="main">
+            <div class="copy">
+                <div class="eyebrow">Jasa &amp; Layanan Profesional</div>
+                <h1>Jasa &amp;<br><span class="accent">Layanan</span></h1>
+                <p class="lead">
+                    Dari landing page perusahaan hingga sistem web kustom —
+                    dikerjakan dengan struktur yang jelas, desain yang tajam,
+                    dan performa yang siap produksi.
+                </p>
+            </div>
+
+            <div class="pillars" aria-hidden="true">
+                <div class="pillar active">
+                    <div class="num">01</div>
+                    <div class="text"><strong>Landing Page / Company Profile</strong><span>Desain · Responsive · SEO</span></div>
+                </div>
+                <div class="pillar">
+                    <div class="num">02</div>
+                    <div class="text"><strong>Web App &amp; CMS</strong><span>Laravel · Admin Panel · API</span></div>
+                </div>
+                <div class="pillar">
+                    <div class="num">03</div>
+                    <div class="text"><strong>Konsultasi &amp; Audit</strong><span>Arsitektur · Performa · Keamanan</span></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="meta">
+                <strong>Full Stack Engineer &amp; System Architect</strong><br>
+                Laravel · Tailwind CSS · Modern JavaScript
+            </div>
+            <div class="stamp">SERVICES <span>01—03</span></div>
+        </footer>
+    </div>
+</div>
+</body>
+</html>

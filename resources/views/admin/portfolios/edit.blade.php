@@ -28,15 +28,25 @@
                             <option value="SaaS Platform" {{ $portfolio->category == 'SaaS Platform' ? 'selected' : '' }}>SaaS Platform</option>
                             <option value="Backend API" {{ $portfolio->category == 'Backend API' ? 'selected' : '' }}>Backend API</option>
                             <option value="Mobile App" {{ $portfolio->category == 'Mobile App' ? 'selected' : '' }}>Mobile App</option>
+                            <option value="E-Commerce & Retail" {{ $portfolio->category == 'E-Commerce & Retail' ? 'selected' : '' }}>E-Commerce &amp; Retail</option>
+                            <option value="Company Profile & Landing Page" {{ $portfolio->category == 'Company Profile & Landing Page' ? 'selected' : '' }}>Company Profile &amp; Landing Page</option>
+                            <option value="Sistem Informasi & Dashboard" {{ $portfolio->category == 'Sistem Informasi & Dashboard' ? 'selected' : '' }}>Sistem Informasi &amp; Dashboard</option>
+                            <option value="Aplikasi Custom" {{ $portfolio->category == 'Aplikasi Custom' ? 'selected' : '' }}>Aplikasi Custom</option>
                         </select>
                         @error('category') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="flex items-center pt-6">
-                        <label class="cursor-pointer flex items-center gap-3">
-                            <input type="checkbox" name="is_featured" value="1" {{ $portfolio->is_featured ? 'checked' : '' }} class="checkbox checkbox-primary" />
-                            <span class="text-xs uppercase font-extrabold tracking-wider text-heading">Tampilkan sebagai Featured</span>
-                        </label>
+                    <div class="flex items-start pt-6">
+                        <div class="space-y-3">
+                            <label class="cursor-pointer flex items-center gap-3">
+                                <input type="checkbox" name="is_featured" value="1" {{ $portfolio->is_featured ? 'checked' : '' }} class="checkbox checkbox-primary" />
+                                <span class="text-xs uppercase font-extrabold tracking-wider text-heading">Tampilkan sebagai Featured</span>
+                            </label>
+                            <label class="cursor-pointer flex items-center gap-3">
+                                <input type="checkbox" name="is_active" value="1" {{ $portfolio->is_active ? 'checked' : '' }} class="checkbox checkbox-primary" />
+                                <span class="text-xs uppercase font-extrabold tracking-wider text-heading">Aktif / Tampilkan di Website</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 

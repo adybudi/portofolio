@@ -35,7 +35,7 @@
                             <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                                 <div class="w-10 h-10 bg-[#0096c7]/10 border border-[#0096c7]/30 flex items-center justify-center font-bold text-sm text-[#0096c7]">
                                     @if($tool->icon_path)
-                                        <img src="{{ uploaded_asset($tool->icon_path) }}" alt="{{ $tool->name }}" class="w-6 h-6 object-contain">
+                                        <img src="{{ uploaded_asset($tool->icon_path) }}" alt="{{ $tool->name }}" loading="lazy" decoding="async" class="w-6 h-6 object-contain">
                                     @else
                                         <svg class="w-5 h-5 text-[#0096c7]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a2 2 0 01-2 2 2 2 0 01-2-2V4zm2 7a2 2 0 100 4 2 2 0 000-4zm-8 4a2 2 0 114 0v1a2 2 0 01-2 2 2 2 0 01-2-2v-1z"/></svg>
                                     @endif

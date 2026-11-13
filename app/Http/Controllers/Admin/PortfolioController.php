@@ -31,6 +31,7 @@ class PortfolioController extends Controller
             'project_url' => 'nullable|url|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120|dimensions:min_width=10,min_height=10,max_width=6000,max_height=6000',
             'is_featured' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $slug = Str::slug($validated['title']) . '-' . Str::random(5);
@@ -49,6 +50,7 @@ class PortfolioController extends Controller
             'project_url' => $validated['project_url'] ?? null,
             'image_path' => $imagePath,
             'is_featured' => $request->has('is_featured'),
+            'is_active' => $request->has('is_active'),
         ]);
 
         return redirect()->route('admin.portfolios.index')->with('success', 'Portfolio created successfully.');
@@ -69,6 +71,7 @@ class PortfolioController extends Controller
             'project_url' => 'nullable|url|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120|dimensions:min_width=10,min_height=10,max_width=6000,max_height=6000',
             'is_featured' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $imagePath = ImageUploadService::update(
@@ -85,6 +88,7 @@ class PortfolioController extends Controller
             'project_url' => $validated['project_url'] ?? null,
             'image_path' => $imagePath,
             'is_featured' => $request->has('is_featured'),
+            'is_active' => $request->has('is_active'),
         ]);
 
         return redirect()->route('admin.portfolios.index')->with('success', 'Portfolio updated successfully.');
@@ -97,5 +101,16 @@ class PortfolioController extends Controller
         ImageUploadService::delete($oldImagePath);
 
         return redirect()->route('admin.portfolios.index')->with('success', 'Portfolio deleted successfully.');
+    }
+
+    /**
+     * Toggle project visibility without deleting it.
+     */
+    public function toggleStatus(Portfolio $portfolio)
+    {
+        $portfolio->update(['is_active' => !$portfolio->is_active]);
+        $status = $portfolio->is_active ? 'diaktifkan' : 'disembunyikan';
+
+        return redirect()->route('admin.portfolios.index')->with('success', "Portofolio berhasil {$status}.");
     }
 }

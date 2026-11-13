@@ -6,23 +6,23 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ $settings['site_name'] ?? 'Ady Budisantika — Portofolio & Direktori Tools' }}</title>
-    <meta name="description" content="{{ $settings['seo_meta_desc'] ?? 'Portofolio & Tools Hub karya Ady Budisantika. Pengembang Software Full Stack spesialis Laravel, Modern JS, dan Arsitektur Cloud.' }}">
-    <meta name="keywords" content="{{ $settings['seo_keywords'] ?? 'Ady Budisantika, Laravel Developer, Full Stack Engineer, Web App, Software Architect, Tools Hub' }}">
+    <meta name="description" content="{{ $settings['seo_meta_desc'] ?? 'Portofolio Ady Budisantika, Software Developer di Bali. Berpengalaman membangun aplikasi web yang efisien dan skalabel.' }}">
+    <meta name="keywords" content="{{ $settings['seo_keywords'] ?? 'Ady Budisantika, Software Developer, Laravel, PHP, JavaScript, React.js, MySQL, Bali' }}">
     <meta name="author" content="Ady Budisantika">
 
     <!-- Open Graph / Facebook / WhatsApp Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ $settings['site_name'] ?? 'Ady Budisantika — Portofolio & Tools Hub' }}">
-    <meta property="og:description" content="{{ $settings['seo_meta_desc'] ?? 'Portofolio & Tools Hub resmi karya Ady Budisantika.' }}">
-    <meta property="og:image" content="{{ asset($settings['hero_avatar'] ?? 'uploads/profile.png') }}">
+    <meta property="og:description" content="{{ $settings['seo_meta_desc'] ?? 'Portofolio Ady Budisantika, Software Developer di Bali.' }}">
+    <meta property="og:image" content="{{ uploaded_asset($settings['hero_avatar'] ?? 'uploads/profile.webp') }}">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ url()->current() }}">
     <meta name="twitter:title" content="{{ $settings['site_name'] ?? 'Ady Budisantika' }}">
-    <meta name="twitter:description" content="{{ $settings['seo_meta_desc'] ?? 'Portofolio & Tools Hub karya Ady Budisantika.' }}">
-    <meta name="twitter:image" content="{{ asset($settings['hero_avatar'] ?? 'uploads/profile.png') }}">
+    <meta name="twitter:description" content="{{ $settings['seo_meta_desc'] ?? 'Portofolio Ady Budisantika, Software Developer di Bali.' }}">
+    <meta name="twitter:image" content="{{ uploaded_asset($settings['hero_avatar'] ?? 'uploads/profile.webp') }}">
 
     <!-- Prevent Theme Flash (Default: Dark Theme) -->
     <script>
@@ -43,9 +43,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-
-    <!-- Three.js CDN fallback for 3D element -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <!-- Cloudflare Turnstile Captcha Script -->
     @if(config('services.turnstile.enabled'))
@@ -100,7 +97,7 @@
                         <a href="{{ route('services.index') }}" class="hover:text-[#0096c7] transition-colors flex items-center gap-1 {{ request()->routeIs('services.index') ? 'text-[#0096c7]' : '' }}">
                             <span>Jasa</span>
                         </a>
-                        <a href="{{ route('home') }}#portfolio" class="hover:text-[#0096c7] transition-colors">Portofolio</a>
+                        <a href="{{ route('portfolio.index') }}" class="hover:text-[#0096c7] transition-colors {{ request()->routeIs('portfolio.index') ? 'text-[#0096c7]' : '' }}">Portofolio</a>
                         <a href="{{ route('products.index') }}" class="hover:text-[#0096c7] transition-colors flex items-center gap-1 {{ request()->routeIs('products.index') ? 'text-[#0096c7]' : '' }}">
                             <span>Produk</span>
                         </a>
@@ -134,7 +131,7 @@
                     @endauth
 
                     <!-- Mobile Hamburger Button -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="lg:hidden p-2 border border-slate-300 dark:border-slate-800 text-heading hover:bg-slate-200 dark:hover:bg-slate-800 transition-all">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" aria-label="Buka menu navigasi" aria-controls="mobile-menu" :aria-expanded="mobileMenuOpen.toString()" class="lg:hidden p-2 border border-slate-300 dark:border-slate-800 text-heading hover:bg-slate-200 dark:hover:bg-slate-800 transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path x-show="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             <path x-show="mobileMenuOpen" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -144,9 +141,9 @@
             </div>
 
             <!-- Mobile Menu Dropdown Drawer -->
-            <div x-show="mobileMenuOpen" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="lg:hidden pt-4 pb-2 border-t border-slate-200 dark:border-slate-800 mt-4 space-y-3 text-xs uppercase tracking-widest font-bold">
+            <div x-show="mobileMenuOpen" x-cloak id="mobile-menu" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="lg:hidden pt-4 pb-2 border-t border-slate-200 dark:border-slate-800 mt-4 space-y-3 text-xs uppercase tracking-widest font-bold">
                 <a @click="mobileMenuOpen = false" href="{{ route('services.index') }}" class="block py-2 text-[#0096c7]">Jasa & Layanan</a>
-                <a @click="mobileMenuOpen = false" href="{{ route('home') }}#portfolio" class="block py-2 text-heading hover:text-[#0096c7]">Portofolio</a>
+                <a @click="mobileMenuOpen = false" href="{{ route('portfolio.index') }}" class="block py-2 text-heading hover:text-[#0096c7]">Portofolio</a>
                 <a @click="mobileMenuOpen = false" href="{{ route('products.index') }}" class="block py-2 text-[#0096c7]">Produk Jualan</a>
                 <a @click="mobileMenuOpen = false" href="{{ route('tools.index') }}" class="block py-2 text-[#0096c7]">Tools Hub (Gratis)</a>
                 <a @click="mobileMenuOpen = false" href="{{ route('home') }}#contact" class="block py-2 text-heading hover:text-[#0096c7]">Kontak</a>
