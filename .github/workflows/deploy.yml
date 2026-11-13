@@ -40,6 +40,8 @@ jobs:
 
   deploy:
     name: Deploy
+    # script_stop is false on purpose: appleboy wraps every line and treats a
+    # false `[ ... ]` test inside `if` as fatal. We rely on `set -e` instead.
     needs: test
     runs-on: ubuntu-latest
 
@@ -53,7 +55,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script_stop: true
+          script_stop: false
           envs: DEPLOY_PATH
           script: |
             set -e
@@ -75,7 +77,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script_stop: true
+          script_stop: false
           envs: DEPLOY_PATH
           script: |
             set -e
@@ -103,7 +105,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script_stop: true
+          script_stop: false
           envs: DEPLOY_PATH,PUBLIC_PATH
           script: |
             set -ex
@@ -132,7 +134,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script_stop: true
+          script_stop: false
           envs: DEPLOY_PATH,PUBLIC_PATH
           script: |
             set -ex
@@ -160,7 +162,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script_stop: true
+          script_stop: false
           envs: DEPLOY_PATH
           script: |
             set -e
@@ -176,7 +178,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script_stop: true
+          script_stop: false
           envs: DEPLOY_PATH
           script: |
             set -e
