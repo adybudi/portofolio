@@ -106,18 +106,17 @@ jobs:
           script_stop: true
           envs: DEPLOY_PATH,PUBLIC_PATH
           script: |
-            set -e
+            set -ex
             cd "$DEPLOY_PATH"
             if [ -z "$PUBLIC_PATH" ]; then
               echo "ERROR: PUBLIC_PATH secret is empty."
               exit 1
             fi
-            echo "user: $(id -un) | PUBLIC_PATH=$PUBLIC_PATH"
-            ls -ld "$PUBLIC_PATH" "$PUBLIC_PATH/build" 2>&1 || true
+            echo "uid=$(id -u) gid=$(id -g)"
+            stat -c '%n uid=%u gid=%g mode=%a' "$PUBLIC_PATH" "$PUBLIC_PATH/build" 2>&1 || true
             if [ -L "$PUBLIC_PATH/build" ]; then
               echo "public_html/build is a symlink; skipping build copy."
             else
-              rm -rf "$PUBLIC_PATH/build"
               mkdir -p "$PUBLIC_PATH/build"
               cp -R public/build/. "$PUBLIC_PATH/build/"
               echo "build copied"
@@ -136,14 +135,14 @@ jobs:
           script_stop: true
           envs: DEPLOY_PATH,PUBLIC_PATH
           script: |
-            set -e
+            set -ex
             cd "$DEPLOY_PATH"
             if [ -z "$PUBLIC_PATH" ]; then
               echo "ERROR: PUBLIC_PATH secret is empty."
               exit 1
             fi
-            echo "user: $(id -un) | PUBLIC_PATH=$PUBLIC_PATH"
-            ls -ld "$PUBLIC_PATH" "$PUBLIC_PATH/uploads" 2>&1 || true
+            echo "uid=$(id -u) gid=$(id -g)"
+            stat -c '%n uid=%u gid=%g mode=%a' "$PUBLIC_PATH" "$PUBLIC_PATH/uploads" 2>&1 || true
             if [ -L "$PUBLIC_PATH/uploads" ]; then
               echo "public_html/uploads is a symlink; skipping upload copy."
             else
