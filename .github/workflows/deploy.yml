@@ -70,11 +70,16 @@ jobs:
             git reset --hard origin/production
 
             # Install production dependencies only when Composer is available.
+            # --no-scripts: shared hosting disables proc_open, which the default
+            # post-autoload-dump script (`artisan package:discover`) needs.
             if command -v composer >/dev/null 2>&1; then
-              composer install --no-dev --optimize-autoloader --no-interaction
+              composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
             elif [ -f composer.phar ]; then
-              php composer.phar install --no-dev --optimize-autoloader --no-interaction
+              php composer.phar install --no-dev --optimize-autoloader --no-interaction --no-scripts
             fi
+
+            # Run package discovery directly instead of through Composer.
+            php artisan package:discover --ansi || true
 
             # Sync public assets into the cPanel web root.
             # Never delete public_html/uploads or other folders (Seal project lives there too).
