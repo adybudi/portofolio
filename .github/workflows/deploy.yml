@@ -1,11 +1,9 @@
 name: Deploy Portfolio to Shared Hosting
 
 on:
-  # Auto-deploy dinonaktifkan dulu sampai smoke test & manual deploy berhasil.
-  # Setelah sukses, buka komentar push di bawah.
   workflow_dispatch:
-  # push:
-  #   branches: [production]
+  push:
+    branches: [production]
 
 concurrency:
   group: portfolio-production
@@ -48,15 +46,19 @@ jobs:
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          PUBLIC_PATH: ${{ secrets.PUBLIC_PATH }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script_stop: true
+          envs: DEPLOY_PATH,PUBLIC_PATH
           script: |
             set -e
-            cd "${{ secrets.DEPLOY_PATH }}"
+            cd "$DEPLOY_PATH"
 
             # Safety: the deployment target must be a git checkout.
             test -d .git
@@ -64,12 +66,14 @@ jobs:
             # Safety: never deploy stale frontend assets.
             test -f public/build/manifest.json
 
-            echo "Deploying commit: $(git rev-parse --short HEAD)"
+            echo "==> [1/6] Updating code"
+            echo "    Deploying commit: $(git rev-parse --short HEAD)"
             git fetch origin production
             git checkout -B production origin/production
             git reset --hard origin/production
+            echo "    Now at: $(git rev-parse --short HEAD)"
 
-            # Install production dependencies only when Composer is available.
+            echo "==> [2/6] Installing Composer dependencies"
             # --no-scripts: shared hosting disables proc_open, which the default
             # post-autoload-dump script (`artisan package:discover`) needs.
             if command -v composer >/dev/null 2>&1; then
@@ -78,30 +82,41 @@ jobs:
               php composer.phar install --no-dev --optimize-autoloader --no-interaction --no-scripts
             fi
 
-            # Run package discovery directly instead of through Composer.
-            php artisan package:discover --ansi || true
+            echo "==> [3/6] Discovering packages"
+            if php artisan package:discover --ansi; then
+              echo "    Package discovery OK"
+            else
+              echo "    Package discovery failed (exit $?); continuing"
+            fi
 
-            # Sync public assets into the cPanel web root.
+            echo "==> [4/6] Syncing public assets"
             # Never delete public_html/uploads or other folders (Seal project lives there too).
-            PUBLIC_PATH="${{ secrets.PUBLIC_PATH }}"
             if [ -n "$PUBLIC_PATH" ]; then
               if [ -L "$PUBLIC_PATH/build" ]; then
-                echo "public_html/build is a symlink; skipping build copy."
+                echo "    public_html/build is a symlink; skipping build copy."
               else
                 rm -rf "$PUBLIC_PATH/build"
                 mkdir -p "$PUBLIC_PATH/build"
                 cp -R public/build/. "$PUBLIC_PATH/build/"
+                echo "    build copied"
               fi
 
               if [ -L "$PUBLIC_PATH/uploads" ]; then
-                echo "public_html/uploads is a symlink; skipping upload copy."
+                echo "    public_html/uploads is a symlink; skipping upload copy."
               else
                 mkdir -p "$PUBLIC_PATH/uploads"
                 cp -R public/uploads/. "$PUBLIC_PATH/uploads/"
+                echo "    uploads copied"
               fi
+            else
+              echo "    PUBLIC_PATH is empty; skipping asset copy."
             fi
 
+            echo "==> [5/6] Running migrations"
             php artisan migrate --force
+
+            echo "==> [6/6] Rebuilding caches"
+            php artisan optimize:clear || true
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
