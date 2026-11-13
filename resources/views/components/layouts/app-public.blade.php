@@ -94,6 +94,7 @@
                 <!-- Right Nav & Actions (Desktop) -->
                 <div class="flex items-center gap-6">
                     <nav class="hidden lg:flex items-center gap-6 text-xs uppercase tracking-widest font-bold text-subtext">
+                        <a href="{{ route('home') }}" class="hover:text-[#0096c7] transition-colors {{ request()->routeIs('home') ? 'text-[#0096c7]' : '' }}">Beranda</a>
                         <a href="{{ route('services.index') }}" class="hover:text-[#0096c7] transition-colors flex items-center gap-1 {{ request()->routeIs('services.index') ? 'text-[#0096c7]' : '' }}">
                             <span>Jasa</span>
                         </a>
@@ -142,6 +143,7 @@
 
             <!-- Mobile Menu Dropdown Drawer -->
             <div x-show="mobileMenuOpen" x-cloak id="mobile-menu" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="lg:hidden pt-4 pb-2 border-t border-slate-200 dark:border-slate-800 mt-4 space-y-3 text-xs uppercase tracking-widest font-bold">
+                <a @click="mobileMenuOpen = false" href="{{ route('home') }}" class="block py-2 text-heading hover:text-[#0096c7]">Beranda</a>
                 <a @click="mobileMenuOpen = false" href="{{ route('services.index') }}" class="block py-2 text-[#0096c7]">Jasa & Layanan</a>
                 <a @click="mobileMenuOpen = false" href="{{ route('portfolio.index') }}" class="block py-2 text-heading hover:text-[#0096c7]">Portofolio</a>
                 <a @click="mobileMenuOpen = false" href="{{ route('products.index') }}" class="block py-2 text-[#0096c7]">Produk Jualan</a>
