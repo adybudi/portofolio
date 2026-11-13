@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "Deploy 1/5 - Update code"
+      - name: "Deploy 1/7 - Update code"
         uses: appleboy/ssh-action@v1.0.3
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
@@ -66,7 +66,7 @@ jobs:
             git reset --hard origin/production
             echo "Now at: $(git rev-parse --short HEAD)"
 
-      - name: "Deploy 2/5 - Composer & package discovery"
+      - name: "Deploy 2/7 - Composer & package discovery"
         uses: appleboy/ssh-action@v1.0.3
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
@@ -93,7 +93,7 @@ jobs:
               echo "WARN: package discovery failed (exit $?); continuing"
             fi
 
-      - name: "Deploy 3/5 - Sync public assets"
+      - name: "Deploy 3/7 - Sync build assets"
         uses: appleboy/ssh-action@v1.0.3
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
@@ -108,29 +108,51 @@ jobs:
           script: |
             set -e
             cd "$DEPLOY_PATH"
-            # Never delete public_html/uploads or other folders (Seal project lives there too).
-            if [ -n "$PUBLIC_PATH" ]; then
-              if [ -L "$PUBLIC_PATH/build" ]; then
-                echo "public_html/build is a symlink; skipping build copy."
-              else
-                rm -rf "$PUBLIC_PATH/build"
-                mkdir -p "$PUBLIC_PATH/build"
-                cp -R public/build/. "$PUBLIC_PATH/build/"
-                echo "build copied"
-              fi
-
-              if [ -L "$PUBLIC_PATH/uploads" ]; then
-                echo "public_html/uploads is a symlink; skipping upload copy."
-              else
-                mkdir -p "$PUBLIC_PATH/uploads"
-                cp -R public/uploads/. "$PUBLIC_PATH/uploads/"
-                echo "uploads copied"
-              fi
+            if [ -z "$PUBLIC_PATH" ]; then
+              echo "ERROR: PUBLIC_PATH secret is empty."
+              exit 1
+            fi
+            echo "user: $(id -un) | PUBLIC_PATH=$PUBLIC_PATH"
+            ls -ld "$PUBLIC_PATH" "$PUBLIC_PATH/build" 2>&1 || true
+            if [ -L "$PUBLIC_PATH/build" ]; then
+              echo "public_html/build is a symlink; skipping build copy."
             else
-              echo "PUBLIC_PATH is empty; skipping asset copy."
+              rm -rf "$PUBLIC_PATH/build"
+              mkdir -p "$PUBLIC_PATH/build"
+              cp -R public/build/. "$PUBLIC_PATH/build/"
+              echo "build copied"
             fi
 
-      - name: "Deploy 4/5 - Run migrations"
+      - name: "Deploy 4/7 - Sync uploads"
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          PUBLIC_PATH: ${{ secrets.PUBLIC_PATH }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          envs: DEPLOY_PATH,PUBLIC_PATH
+          script: |
+            set -e
+            cd "$DEPLOY_PATH"
+            if [ -z "$PUBLIC_PATH" ]; then
+              echo "ERROR: PUBLIC_PATH secret is empty."
+              exit 1
+            fi
+            echo "user: $(id -un) | PUBLIC_PATH=$PUBLIC_PATH"
+            ls -ld "$PUBLIC_PATH" "$PUBLIC_PATH/uploads" 2>&1 || true
+            if [ -L "$PUBLIC_PATH/uploads" ]; then
+              echo "public_html/uploads is a symlink; skipping upload copy."
+            else
+              mkdir -p "$PUBLIC_PATH/uploads"
+              cp -R public/uploads/. "$PUBLIC_PATH/uploads/"
+              echo "uploads copied"
+            fi
+
+      - name: "Deploy 5/7 - Run migrations"
         uses: appleboy/ssh-action@v1.0.3
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
@@ -146,7 +168,7 @@ jobs:
             cd "$DEPLOY_PATH"
             php artisan migrate --force
 
-      - name: "Deploy 5/5 - Rebuild caches"
+      - name: "Deploy 6/7 - Rebuild caches"
         uses: appleboy/ssh-action@v1.0.3
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
