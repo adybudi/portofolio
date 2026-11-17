@@ -52,6 +52,7 @@
     <!-- Vite Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>[x-cloak] { display: none !important; }</style>
+    @stack('head')
 </head>
 <body class="bg-[#f7f8f9] dark:bg-[#0b0f17] text-[#1a1d20] dark:text-[#e5e7eb] antialiased selection:bg-[#0096c7] selection:text-white font-sans transition-colors duration-300 relative"
       x-data="{ 
@@ -214,5 +215,6 @@
             </div>
         </div>
     </footer>
+    @stack('scripts')
 </body>
 </html>

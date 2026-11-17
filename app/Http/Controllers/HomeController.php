@@ -157,8 +157,9 @@ class HomeController extends Controller
         ];
 
         $tools = Tool::where('is_active', true)->latest()->get();
+        $internalTools = config('tools.tools', []);
 
-        return view('tools', compact('settings', 'tools'));
+        return view('tools', compact('settings', 'tools', 'internalTools'));
     }
 
     /**

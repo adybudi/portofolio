@@ -17,6 +17,8 @@ class SitemapController extends Controller
             ['loc' => route('services.index'), 'changefreq' => 'weekly', 'priority' => '0.9'],
             ['loc' => route('products.index'), 'changefreq' => 'weekly', 'priority' => '0.8'],
             ['loc' => route('tools.index'), 'changefreq' => 'weekly', 'priority' => '0.8'],
+            ['loc' => route('tools.merge-pdf'), 'changefreq' => 'monthly', 'priority' => '0.7'],
+            ['loc' => route('tools.compress-image'), 'changefreq' => 'monthly', 'priority' => '0.7'],
         ];
 
         $xml = view('sitemap', [

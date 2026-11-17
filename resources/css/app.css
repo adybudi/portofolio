@@ -182,3 +182,24 @@ html[data-theme="dark"] .input-theme::placeholder, html.dark .input-theme::place
     padding: 0 !important;
     background: transparent !important;
 }
+
+/* Internal Tools */
+.tool-dropzone.is-dragging {
+    border-color: #0096c7 !important;
+    background-color: rgba(0, 150, 199, 0.08) !important;
+}
+
+#merge-pdf-status[data-state="error"],
+#ci-status[data-state="error"] {
+    color: #ef4444;
+}
+
+#merge-pdf-status[data-state="success"],
+#ci-status[data-state="success"] {
+    color: #10b981;
+}
+
+#merge-pdf-status[data-state="warning"],
+#ci-status[data-state="warning"] {
+    color: #f59e0b;
+}

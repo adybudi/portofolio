@@ -27,6 +27,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [HomeController::class, 'products'])->name('products.index');
 Route::get('/portfolio', [HomeController::class, 'portfolio'])->name('portfolio.index');
 Route::get('/tools', [HomeController::class, 'tools'])->name('tools.index');
+Route::get('/tools/merge-pdf', [\App\Http\Controllers\Tools\ToolController::class, 'mergePdf'])->name('tools.merge-pdf');
+Route::get('/tools/compress-image', [\App\Http\Controllers\Tools\ToolController::class, 'compressImage'])->name('tools.compress-image');
 Route::get('/tools/{tool:slug}/launch', [HomeController::class, 'launchTool'])->name('tools.launch');
 Route::get('/download-cv', [HomeController::class, 'downloadCv'])->name('cv.download');
 Route::get('/services', [HomeController::class, 'services'])->name('services.index');

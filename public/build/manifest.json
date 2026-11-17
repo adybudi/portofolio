@@ -1,6 +1,10 @@
 {
+  "_shared-BN89FLsa.js": {
+    "file": "assets/shared-BN89FLsa.js",
+    "name": "shared"
+  },
   "resources/css/app.css": {
-    "file": "assets/app-Tsa7dz-r.css",
+    "file": "assets/app-CQrygxkD.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -13,5 +17,33 @@
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
+  },
+  "resources/js/tools/compress_image.js": {
+    "file": "assets/compress_image-D6su242e.js",
+    "name": "compress_image",
+    "src": "resources/js/tools/compress_image.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_shared-BN89FLsa.js"
+    ]
+  },
+  "resources/js/tools/index.js": {
+    "file": "assets/index-Dugj1gK0.js",
+    "name": "index",
+    "src": "resources/js/tools/index.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/tools/merge_pdf.js",
+      "resources/js/tools/compress_image.js"
+    ]
+  },
+  "resources/js/tools/merge_pdf.js": {
+    "file": "assets/merge_pdf-BtdqpSnP.js",
+    "name": "merge_pdf",
+    "src": "resources/js/tools/merge_pdf.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_shared-BN89FLsa.js"
+    ]
   }
 }

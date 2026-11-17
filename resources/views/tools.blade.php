@@ -26,7 +26,49 @@
 
             <!-- Responsive Grid (1 column on mobile, 3 columns on desktop) -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @forelse($tools as $index => $tool)
+                @php($hasTools = count($internalTools ?? []) > 0 || $tools->count() > 0)
+
+                @if(! $hasTools)
+                    <div class="col-span-full text-center py-16 text-subtext text-xs uppercase tracking-widest">
+                        Tidak ada tool yang ditemukan.
+                    </div>
+                @endif
+
+                @foreach($internalTools ?? [] as $tool)
+                    <div class="editorial-card editorial-card-hover rounded-none p-6 flex flex-col justify-between space-y-6"
+                         data-search="{{ strtolower($tool['name'] . ' ' . $tool['description'] . ' ' . $tool['category']) }}"
+                         x-show="search === '' || $el.dataset.search.includes(search.toLowerCase())">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                                <div class="w-10 h-10 bg-[#0096c7]/10 border border-[#0096c7]/30 flex items-center justify-center font-bold text-sm text-[#0096c7]">
+                                    <svg class="w-5 h-5 text-[#0096c7]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-[#10b981]">GRATIS</span>
+                                    <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-subtext">{{ $tool['category'] }}</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <h3 class="font-display text-2xl font-bold text-heading uppercase">
+                                    {{ $tool['name'] }}
+                                </h3>
+                                <p class="text-subtext text-xs leading-relaxed line-clamp-3">
+                                    {{ $tool['description'] }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+                            <a href="{{ route($tool['route']) }}" class="text-xs uppercase font-extrabold tracking-widest text-[#0096c7] hover:underline flex items-center justify-between">
+                                <span>BUKA TOOL</span>
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
+
+                @foreach($tools as $index => $tool)
                     <div class="editorial-card editorial-card-hover rounded-none p-6 flex flex-col justify-between space-y-6"
                          x-show="search === '' || '{{ strtolower($tool->name . ' ' . $tool->description . ' ' . $tool->category) }}'.includes(search.toLowerCase())">
                         
@@ -70,11 +112,7 @@
                             </a>
                         </div>
                     </div>
-                @empty
-                    <div class="col-span-3 text-center py-16 text-subtext text-xs uppercase tracking-widest">
-                        Tidak ada tool yang ditemukan.
-                    </div>
-                @endforelse
+                @endforeach
             </div>
         </div>
     </div>
