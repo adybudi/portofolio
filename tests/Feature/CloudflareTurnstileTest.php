@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
+use App\Support\Honeypot;
 
 class CloudflareTurnstileTest extends TestCase
 {
@@ -16,12 +17,12 @@ class CloudflareTurnstileTest extends TestCase
     {
         Config::set('services.turnstile.enabled', false);
 
-        $response = $this->post(route('contact.send'), [
+        $response = $this->post(route('contact.send'), array_merge([
             'name' => 'Budi Tester',
             'email' => 'budi@example.com',
             'subject' => 'Project Inquiry',
             'message' => 'Halo, ini pesan pengujian tanpa captcha.',
-        ]);
+        ], Honeypot::fields(now()->subSeconds(5)->timestamp)));
 
         $response->assertSessionHas('contact_success');
         $this->assertDatabaseHas('contact_messages', [
@@ -86,13 +87,13 @@ class CloudflareTurnstileTest extends TestCase
             ], 200),
         ]);
 
-        $response = $this->post(route('contact.send'), [
+        $response = $this->post(route('contact.send'), array_merge([
             'name' => 'Budi Tester',
             'email' => 'budi_valid@example.com',
             'subject' => 'Project Inquiry',
             'message' => 'Halo, ini pesan valid.',
             'cf-turnstile-response' => 'valid-token-xyz',
-        ]);
+        ], Honeypot::fields(now()->subSeconds(5)->timestamp)));
 
         $response->assertSessionHas('contact_success');
         $this->assertDatabaseHas('contact_messages', [

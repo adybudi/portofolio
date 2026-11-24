@@ -123,4 +123,18 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Reverse Proxy & Host Hardening
+    |--------------------------------------------------------------------------
+    |
+    | These values live in config so they still work when `config:cache` has
+    | been generated (env() is unavailable in that state).
+    |
+    */
+
+    'trusted_proxies' => env('TRUSTED_PROXIES', ''),
+
+    'trusted_hosts' => env('TRUSTED_HOSTS', ''),
+
 ];

@@ -125,13 +125,26 @@ class BackupController extends Controller
 
         $request->validate([
             'password' => 'required|string',
+            'token' => 'required|string',
         ], [
             'password.required' => 'Password konfirmasi wajib diisi untuk melakukan import.',
+            'token.required' => 'Token konfirmasi import tidak ditemukan. Silakan upload ulang file backup.',
         ]);
 
         if (!Hash::check($request->password, auth()->user()->password)) {
             AuditLogger::logBackupActivity('import_auth', 'failed', ['reason' => 'invalid_password']);
             return back()->withErrors(['password' => 'Password konfirmasi salah. Prosedur import dibatalkan.']);
+        }
+
+        $sessionToken = (string) session('pending_backup_token');
+
+        if ($sessionToken === '' || ! hash_equals($sessionToken, (string) $request->input('token'))) {
+            session()->forget(['pending_backup_import', 'pending_backup_token']);
+            AuditLogger::logBackupActivity('import_execute', 'failed', ['reason' => 'invalid_confirmation_token']);
+
+            return redirect()->route('admin.settings.index')->withErrors([
+                'backup_file' => 'Token konfirmasi import tidak valid atau sesi telah kedaluwarsa. Silakan upload ulang file backup.',
+            ]);
         }
 
         $content = session('pending_backup_import');
@@ -194,6 +207,10 @@ class BackupController extends Controller
                             $settingValue = json_encode(array_values(array_unique($paths)));
                         } elseif ($settingKey === 'hero_hover_duration') {
                             $settingValue = (string) max(200, min(10000, (int) $settingValue));
+                        } elseif (in_array($settingKey, ['github_url', 'linkedin_url'], true)) {
+                            $settingValue = $this->sanitizeHttpUrl($settingValue) ?? '';
+                        } elseif ($settingKey === 'spline_embed_url') {
+                            $settingValue = $this->sanitizeSplineUrl($settingValue) ?? '';
                         }
 
                         Setting::set($settingKey, $settingValue);
@@ -213,7 +230,7 @@ class BackupController extends Controller
                                 'title' => $p['title'],
                                 'description' => $p['description'] ?? '',
                                 'image_path' => $this->sanitizeFilePath($p['image_path'] ?? null),
-                                'project_url' => $p['project_url'] ?? null,
+                                'project_url' => $this->sanitizeHttpUrl($p['project_url'] ?? null),
                                 'category' => $p['category'] ?? 'Web App',
                                 'tech_stack' => $p['tech_stack'] ?? null,
                                 'is_featured' => $p['is_featured'] ?? false,
@@ -240,7 +257,7 @@ class BackupController extends Controller
                             'description' => $prod['description'] ?? null,
                             'price' => $prod['price'] ?? null,
                             'category' => $prod['category'] ?? null,
-                            'link' => $prod['link'] ?? null,
+                            'link' => $this->sanitizeHttpUrl($prod['link'] ?? null),
                             'image_path' => $this->sanitizeFilePath($prod['image_path'] ?? null),
                             'is_active' => $prod['is_active'] ?? true,
                             'order' => $prod['order'] ?? 0,
@@ -272,7 +289,9 @@ class BackupController extends Controller
 
                 if (isset($content['tools']) && is_array($content['tools'])) {
                     foreach ($content['tools'] as $t) {
-                        if (isset($t['name']) && isset($t['url'])) {
+                        $safeToolUrl = $this->sanitizeHttpUrl($t['url'] ?? null);
+
+                        if (isset($t['name']) && $safeToolUrl !== null) {
                             $identity = !empty($t['slug']) ? ['slug' => $t['slug']] : ['name' => $t['name']];
                             $slug = !empty($t['slug']) ? $t['slug'] : Str::slug($t['name']);
 
@@ -281,7 +300,7 @@ class BackupController extends Controller
                                 'name' => $t['name'],
                                 'description' => $t['description'] ?? '',
                                 'icon_path' => $this->sanitizeFilePath($t['icon_path'] ?? null),
-                                'url' => $t['url'],
+                                'url' => $safeToolUrl,
                                 'category' => $t['category'] ?? 'Developer Utility',
                                 'is_active' => $t['is_active'] ?? true,
                                 'clicks_count' => $t['clicks_count'] ?? 0,
@@ -311,7 +330,7 @@ class BackupController extends Controller
                             Certification::updateOrCreate(['name' => $c['name']], [
                                 'issuer' => $c['issuer'] ?? '',
                                 'issue_date' => $c['issue_date'] ?? null,
-                                'credential_url' => $c['credential_url'] ?? null,
+                                'credential_url' => $this->sanitizeHttpUrl($c['credential_url'] ?? null),
                                 'order' => $c['order'] ?? 0,
                             ]);
                         }
@@ -336,15 +355,67 @@ class BackupController extends Controller
      */
     private function validatePathTraversalSafety(array $data): bool
     {
-        array_walk_recursive($data, function ($value, $key) {
-            if (is_string($value) && (str_contains($key, 'path') || str_contains($key, 'file'))) {
-                if ($this->hasTraversalAttempt($value)) {
-                    throw new \InvalidArgumentException("Path traversal attempt detected in key [{$key}]: {$value}");
-                }
-            }
-        });
+        $this->scanPayloadForTraversal($data);
 
         return true;
+    }
+
+    private function scanPayloadForTraversal(mixed $node): void
+    {
+        if (!is_array($node)) {
+            return;
+        }
+
+        // Settings use an indirection: ['key' => 'hero_avatar', 'value' => '...'].
+        if (isset($node['key'], $node['value']) && is_string($node['key'])) {
+            $settingKey = strtolower($node['key']);
+
+            if ($this->isSensitivePathKey($settingKey)) {
+                if ($settingKey === 'hero_avatars' && is_string($node['value'])) {
+                    $decoded = json_decode($node['value'], true);
+
+                    if (is_array($decoded)) {
+                        foreach ($decoded as $path) {
+                            if (is_string($path)) {
+                                $this->assertSafePath($path, $settingKey);
+                            }
+                        }
+                    }
+                } elseif (is_string($node['value'])) {
+                    $this->assertSafePath($node['value'], $settingKey);
+                }
+            }
+        }
+
+        foreach ($node as $key => $value) {
+            if (is_string($key) && is_string($value) && $this->isSensitivePathKey($key)) {
+                $this->assertSafePath($value, $key);
+            }
+
+            if (is_array($value)) {
+                $this->scanPayloadForTraversal($value);
+            }
+        }
+    }
+
+    private function isSensitivePathKey(string $key): bool
+    {
+        $key = strtolower($key);
+
+        foreach (['path', 'file', 'image', 'avatar', 'icon'] as $fragment) {
+            if (str_contains($key, $fragment)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function assertSafePath(string $value, string $key): void
+    {
+        if ($this->hasTraversalAttempt($value)) {
+            throw new \InvalidArgumentException("Path traversal attempt detected in key [{$key}]: {$value}");
+        }
     }
 
     private function hasTraversalAttempt(string $path): bool
@@ -365,6 +436,43 @@ class BackupController extends Controller
         }
 
         return false;
+    }
+
+    private function sanitizeHttpUrl(?string $url): ?string
+    {
+        if ($url === null || trim($url) === '') {
+            return null;
+        }
+
+        $url = trim($url);
+        $parts = parse_url($url);
+
+        if ($parts === false || empty($parts['scheme']) || empty($parts['host'])) {
+            return null;
+        }
+
+        if (!in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
+            return null;
+        }
+
+        return $url;
+    }
+
+    private function sanitizeSplineUrl(?string $url): ?string
+    {
+        $clean = $this->sanitizeHttpUrl($url);
+
+        if ($clean === null) {
+            return null;
+        }
+
+        $host = strtolower((string) parse_url($clean, PHP_URL_HOST));
+
+        if ($host !== 'spline.design' && !str_ends_with($host, '.spline.design')) {
+            return null;
+        }
+
+        return $clean;
     }
 
     private function sanitizeFilePath(?string $path): ?string

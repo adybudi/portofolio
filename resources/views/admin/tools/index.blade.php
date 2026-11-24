@@ -53,7 +53,7 @@
                                     </span>
                                 </td>
                                 <td class="p-4 font-mono text-xs">
-                                    <a href="{{ route('tools.launch', $item) }}" target="_blank" class="text-[#0096c7] hover:underline flex items-center gap-1">
+                                    <a href="{{ route('tools.launch', $item) }}" target="_blank" rel="noopener noreferrer" class="text-[#0096c7] hover:underline flex items-center gap-1">
                                         <span>Buka Link</span>
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                     </a>

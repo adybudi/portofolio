@@ -21,6 +21,11 @@ $app = Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SecurityHeaders::class,
             \App\Http\Middleware\CheckMaintenanceMode::class,
         ]);
+
+        // Trusted hosts/proxies are configured in AppServiceProvider::boot(),
+        // where the cached config is available. Enabling the middleware here
+        // keeps the hardening active for every request.
+        $middleware->trustHosts();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

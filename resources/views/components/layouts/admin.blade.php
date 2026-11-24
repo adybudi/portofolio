@@ -181,7 +181,7 @@
                         </span>
                     </button>
 
-                    <a href="{{ route('home') }}" target="_blank" class="px-3.5 py-1.5 border border-[#0096c7] text-[#0096c7] hover:bg-[#0096c7] hover:text-white text-xs uppercase font-extrabold tracking-wider transition-all flex items-center gap-1">
+                    <a href="{{ route('home') }}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 border border-[#0096c7] text-[#0096c7] hover:bg-[#0096c7] hover:text-white text-xs uppercase font-extrabold tracking-wider transition-all flex items-center gap-1">
                         <span>LIHAT LIVE WEB</span>
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>

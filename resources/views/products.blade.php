@@ -91,7 +91,7 @@
                                 <span>Detail</span>
                             </button>
                             @if($item->link)
-                                <a href="{{ $item->link }}" target="_blank" class="px-4 py-2 bg-[#0096c7] hover:bg-[#0077b6] text-white text-[11px] font-extrabold uppercase tracking-wider transition-all flex items-center gap-1">
+                                <a href="{{ $item->link }}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-[#0096c7] hover:bg-[#0077b6] text-white text-[11px] font-extrabold uppercase tracking-wider transition-all flex items-center gap-1">
                                     <span>Beli Sekarang</span>
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                 </a>
@@ -141,7 +141,7 @@
                                 <button type="button" @click="isModalOpen = false" class="px-5 py-2.5 border border-slate-300 dark:border-slate-700 text-subtext hover:text-heading text-xs font-mono font-bold uppercase">Tutup</button>
 
                                 <template x-if="selectedProduct.link">
-                                    <a :href="selectedProduct.link" target="_blank" class="px-6 py-2.5 bg-[#0096c7] hover:bg-[#0077b6] text-white text-xs font-extrabold uppercase tracking-widest transition-all flex items-center gap-1.5">
+                                    <a :href="selectedProduct.link" target="_blank" rel="noopener noreferrer" class="px-6 py-2.5 bg-[#0096c7] hover:bg-[#0077b6] text-white text-xs font-extrabold uppercase tracking-widest transition-all flex items-center gap-1.5">
                                         <span>Beli / Buka Link Pembelian</span>
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                     </a>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Portfolio;
+use App\Rules\SafeHttpUrl;
 use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -28,7 +29,7 @@ class PortfolioController extends Controller
             'category' => 'required|string|max:100',
             'tech_stack' => 'nullable|string|max:255',
             'description' => 'required|string',
-            'project_url' => 'nullable|url|max:255',
+            'project_url' => ['nullable', 'string', 'max:255', new SafeHttpUrl],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120|dimensions:min_width=10,min_height=10,max_width=6000,max_height=6000',
             'is_featured' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
@@ -68,7 +69,7 @@ class PortfolioController extends Controller
             'category' => 'required|string|max:100',
             'tech_stack' => 'nullable|string|max:255',
             'description' => 'required|string',
-            'project_url' => 'nullable|url|max:255',
+            'project_url' => ['nullable', 'string', 'max:255', new SafeHttpUrl],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120|dimensions:min_width=10,min_height=10,max_width=6000,max_height=6000',
             'is_featured' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',

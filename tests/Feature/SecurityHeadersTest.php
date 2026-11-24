@@ -22,12 +22,17 @@ class SecurityHeadersTest extends TestCase
         $response->assertHeader('X-Content-Type-Options', 'nosniff');
         $response->assertHeader('X-Frame-Options', 'SAMEORIGIN');
         $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-        $response->assertHeader('X-XSS-Protection', '1; mode=block');
+        $response->assertHeader('X-XSS-Protection', '0');
         $response->assertHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
         $response->assertHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
         $this->assertTrue($response->headers->has('Content-Security-Policy'));
         $csp = $response->headers->get('Content-Security-Policy');
         $this->assertStringContainsString('https://challenges.cloudflare.com', $csp);
+        $this->assertStringContainsString("connect-src 'self' https://challenges.cloudflare.com", $csp);
+        $this->assertStringContainsString("frame-ancestors 'self'", $csp);
+        $this->assertStringContainsString("img-src 'self' data: blob:", $csp);
+        $this->assertStringNotContainsString("img-src 'self' data: https: blob:", $csp);
+        $this->assertStringNotContainsString("connect-src 'self' https:;", $csp);
     }
 
     public function test_hsts_header_is_present_on_https_or_production(): void

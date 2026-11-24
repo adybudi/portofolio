@@ -199,8 +199,10 @@ class HomeController extends Controller
             return back()->with('error', 'Berkas CV belum diunggah oleh administrator.');
         }
 
-        $current = (int) Setting::get('cv_download_count', '0');
-        Setting::set('cv_download_count', (string) ($current + 1));
+        // Atomic counter update. Using the query builder bypasses the model
+        // "saved" event, so the global settings cache is not flushed per download.
+        Setting::firstOrCreate(['key' => 'cv_download_count'], ['value' => '0']);
+        Setting::query()->where('key', 'cv_download_count')->increment('value');
 
         return response()->download($fullPath, 'CV_Ady_Budisantika.pdf');
     }

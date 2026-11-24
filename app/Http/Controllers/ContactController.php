@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
 use App\Rules\TurnstileRule;
+use App\Support\Honeypot;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -13,11 +14,6 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        // Honeypot check for anti-bot spam
-        if ($request->filled('website_url')) {
-            return back()->with('contact_success', 'Pesan Anda telah berhasil terkirim! Terima kasih telah menghubungi saya.');
-        }
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -25,6 +21,12 @@ class ContactController extends Controller
             'message' => 'required|string|max:2000',
             'cf-turnstile-response' => [new TurnstileRule],
         ]);
+
+        // Honeypot + submission-timing check for anti-bot spam.
+        // Fail silently so bots do not learn which field tripped.
+        if (! Honeypot::passes($request)) {
+            return back()->with('contact_success', 'Pesan Anda telah berhasil terkirim! Terima kasih telah menghubungi saya.');
+        }
 
         ContactMessage::create([
             'name' => $validated['name'],

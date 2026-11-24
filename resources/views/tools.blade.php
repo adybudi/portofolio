@@ -106,7 +106,7 @@
 
                         <!-- Action Button -->
                         <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
-                            <a href="{{ route('tools.launch', $tool) }}" target="_blank" class="text-xs uppercase font-extrabold tracking-widest text-[#0096c7] hover:underline flex items-center justify-between">
+                            <a href="{{ route('tools.launch', $tool) }}" target="_blank" rel="noopener noreferrer" class="text-xs uppercase font-extrabold tracking-widest text-[#0096c7] hover:underline flex items-center justify-between">
                                 <span>BUKA TOOL</span>
                                 <span>→</span>
                             </a>

@@ -15,7 +15,7 @@ class SecurityHeaders
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        $response->headers->set('X-XSS-Protection', '1; mode=block');
+        $response->headers->set('X-XSS-Protection', '0');
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
         $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
         $response->headers->set('Cross-Origin-Resource-Policy', 'cross-origin');
@@ -25,9 +25,10 @@ class SecurityHeaders
                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com; " .
                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
                "font-src 'self' https://fonts.gstatic.com data:; " .
-               "img-src 'self' data: https: blob:; " .
+               "img-src 'self' data: blob:; " .
                "frame-src 'self' https://my.spline.design https://challenges.cloudflare.com; " .
-               "connect-src 'self' https:; " .
+               "connect-src 'self' https://challenges.cloudflare.com; " .
+               "frame-ancestors 'self'; " .
                "object-src 'none'; " .
                "base-uri 'self'; " .
                "form-action 'self';";
@@ -46,12 +47,12 @@ class SecurityHeaders
                         [
                             "script-src 'self'",
                             "style-src 'self'",
-                            "connect-src 'self' https:",
+                            "connect-src 'self' https://challenges.cloudflare.com",
                         ],
                         [
                             "script-src 'self' {$viteOrigin}",
                             "style-src 'self' {$viteOrigin}",
-                            "connect-src 'self' https: {$viteOrigin} {$viteWsOrigin}",
+                            "connect-src 'self' https://challenges.cloudflare.com {$viteOrigin} {$viteWsOrigin}",
                         ],
                         $csp
                     );

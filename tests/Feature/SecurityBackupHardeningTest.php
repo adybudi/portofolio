@@ -171,10 +171,12 @@ class SecurityBackupHardeningTest extends TestCase
                     ],
                 ],
             ],
+            'pending_backup_token' => 'test-token-123',
         ]);
 
         $response = $this->actingAs($admin)->post(route('admin.backup.import'), [
             'password' => 'password',
+            'token' => 'test-token-123',
         ]);
 
         $response->assertSessionHasErrors('backup_file');

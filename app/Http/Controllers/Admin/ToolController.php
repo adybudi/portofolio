@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tool;
+use App\Rules\SafeHttpUrl;
 use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -27,7 +28,7 @@ class ToolController extends Controller
             'name' => 'required|string|max:255',
             'category' => 'required|string|max:100',
             'description' => 'required|string',
-            'url' => 'required|url|max:255',
+            'url' => ['required', 'string', 'max:255', new SafeHttpUrl],
             'icon' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120|dimensions:min_width=10,min_height=10,max_width=6000,max_height=6000',
             'is_active' => 'nullable|boolean',
         ]);
@@ -63,7 +64,7 @@ class ToolController extends Controller
             'name' => 'required|string|max:255',
             'category' => 'required|string|max:100',
             'description' => 'required|string',
-            'url' => 'required|url|max:255',
+            'url' => ['required', 'string', 'max:255', new SafeHttpUrl],
             'icon' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120|dimensions:min_width=10,min_height=10,max_width=6000,max_height=6000',
             'is_active' => 'nullable|boolean',
         ]);

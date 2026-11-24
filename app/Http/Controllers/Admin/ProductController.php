@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Rules\SafeHttpUrl;
 use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -37,7 +38,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'nullable|numeric|min:0',
             'category' => 'nullable|string|max:100',
-            'link' => 'nullable|url|max:500',
+            'link' => ['nullable', 'string', 'max:500', new SafeHttpUrl],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120|dimensions:min_width=10,min_height=10,max_width=6000,max_height=6000',
             'is_active' => 'nullable|boolean',
             'order' => 'nullable|integer',
@@ -86,7 +87,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'nullable|numeric|min:0',
             'category' => 'nullable|string|max:100',
-            'link' => 'nullable|url|max:500',
+            'link' => ['nullable', 'string', 'max:500', new SafeHttpUrl],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120|dimensions:min_width=10,min_height=10,max_width=6000,max_height=6000',
             'is_active' => 'nullable|boolean',
             'order' => 'nullable|integer',

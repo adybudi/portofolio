@@ -364,7 +364,7 @@
                                             <span>Detail Proyek</span>
                                         </button>
                                         @if($item->project_url)
-                                            <a href="{{ $item->project_url }}" target="_blank" class="text-[#0096c7] hover:underline flex items-center gap-1">
+                                            <a href="{{ $item->project_url }}" target="_blank" rel="noopener noreferrer" class="text-[#0096c7] hover:underline flex items-center gap-1">
                                                 <span>Live Demo</span>
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                             </a>
@@ -433,7 +433,7 @@
                                     <button type="button" @click="isModalOpen = false" class="px-5 py-2.5 border border-slate-300 dark:border-slate-700 text-subtext hover:text-heading text-xs font-mono font-bold uppercase">Tutup Modal</button>
 
                                     <template x-if="selectedProject.project_url">
-                                        <a :href="selectedProject.project_url" target="_blank" class="px-6 py-2.5 bg-[#0096c7] hover:bg-[#0077b6] text-white text-xs font-extrabold uppercase tracking-widest transition-all flex items-center gap-1.5">
+                                        <a :href="selectedProject.project_url" target="_blank" rel="noopener noreferrer" class="px-6 py-2.5 bg-[#0096c7] hover:bg-[#0077b6] text-white text-xs font-extrabold uppercase tracking-widest transition-all flex items-center gap-1.5">
                                             <span>Buka Demo Proyek Live</span>
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                         </a>
@@ -573,7 +573,7 @@
                                     <button type="button" @click="isProductModalOpen = false" class="px-5 py-2.5 border border-slate-300 dark:border-slate-700 text-subtext hover:text-heading text-xs font-mono font-bold uppercase">Tutup</button>
 
                                     <template x-if="selectedHomeProduct.link">
-                                        <a :href="selectedHomeProduct.link" target="_blank" class="px-6 py-2.5 bg-[#0096c7] hover:bg-[#0077b6] text-white text-xs font-extrabold uppercase tracking-widest transition-all flex items-center gap-1.5">
+                                        <a :href="selectedHomeProduct.link" target="_blank" rel="noopener noreferrer" class="px-6 py-2.5 bg-[#0096c7] hover:bg-[#0077b6] text-white text-xs font-extrabold uppercase tracking-widest transition-all flex items-center gap-1.5">
                                             <span>Beli / Buka Link Pembelian</span>
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                         </a>
@@ -668,7 +668,7 @@
                                     <p class="text-[11px] text-subtext leading-relaxed">{{ $item->description }}</p>
                                 @endif
                                 @if($item->credential_url)
-                                    <a href="{{ $item->credential_url }}" target="_blank" class="text-[10px] font-mono font-bold text-[#0096c7] hover:underline flex items-center gap-1 pt-1">
+                                    <a href="{{ $item->credential_url }}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-mono font-bold text-[#0096c7] hover:underline flex items-center gap-1 pt-1">
                                         <span>Verifikasi Kredensial</span>
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                     </a>
@@ -716,7 +716,7 @@
                                 @if(!empty($settings['linkedin_url']))
                                     <div>
                                         <span class="text-[10px] font-bold uppercase tracking-widest text-subtext block">LINKEDIN</span>
-                                        <a href="{{ $settings['linkedin_url'] }}" target="_blank" class="font-bold text-heading hover:text-[#0096c7] transition-colors">linkedin.com/in/ady-budisantika-2a6814335</a>
+                                        <a href="{{ $settings['linkedin_url'] }}" target="_blank" rel="noopener noreferrer" class="font-bold text-heading hover:text-[#0096c7] transition-colors">linkedin.com/in/ady-budisantika-2a6814335</a>
                                     </div>
                                 @endif
                             </div>
@@ -737,6 +737,7 @@
                                     @csrf
                                     <!-- Anti-bot Honeypot Field -->
                                     <input type="text" name="website_url" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
+                                    <x-honeypot />
 
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>

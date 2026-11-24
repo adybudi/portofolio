@@ -134,12 +134,12 @@ class HardeningFixesTest extends TestCase
             ]],
         ];
 
-        session(['pending_backup_import' => $payload]);
-        $this->actingAs($admin)->post(route('admin.backup.import'), ['password' => 'password'])
+        session(['pending_backup_import' => $payload, 'pending_backup_token' => 'test-token-123']);
+        $this->actingAs($admin)->post(route('admin.backup.import'), ['password' => 'password', 'token' => 'test-token-123'])
             ->assertRedirect(route('admin.settings.index'));
 
-        session(['pending_backup_import' => $payload]);
-        $this->actingAs($admin)->post(route('admin.backup.import'), ['password' => 'password'])
+        session(['pending_backup_import' => $payload, 'pending_backup_token' => 'test-token-123']);
+        $this->actingAs($admin)->post(route('admin.backup.import'), ['password' => 'password', 'token' => 'test-token-123'])
             ->assertRedirect(route('admin.settings.index'));
 
         $this->assertSame(1, \App\Models\Portfolio::where('slug', 'repeated-project')->count());
@@ -154,13 +154,16 @@ class HardeningFixesTest extends TestCase
         $admin = User::first();
         Setting::set('site_name', 'Keep This Name');
 
-        session(['pending_backup_import' => [
-            'settings' => [
-                ['key' => 'site_name', 'value' => null],
+        session([
+            'pending_backup_import' => [
+                'settings' => [
+                    ['key' => 'site_name', 'value' => null],
+                ],
             ],
-        ]]);
+            'pending_backup_token' => 'test-token-123',
+        ]);
 
-        $this->actingAs($admin)->post(route('admin.backup.import'), ['password' => 'password'])
+        $this->actingAs($admin)->post(route('admin.backup.import'), ['password' => 'password', 'token' => 'test-token-123'])
             ->assertRedirect(route('admin.settings.index'));
 
         $this->assertSame('Keep This Name', Setting::get('site_name'));

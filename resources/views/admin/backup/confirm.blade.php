@@ -84,6 +84,7 @@
 
             <!-- Re-authentication Form -->
             <form method="POST" action="{{ route('admin.backup.import') }}" class="space-y-4 pt-2">
+                <input type="hidden" name="token" value="{{ session('pending_backup_token') }}">
                 @csrf
 
                 <div>

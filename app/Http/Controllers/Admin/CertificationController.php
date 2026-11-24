@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Certification;
+use App\Rules\SafeHttpUrl;
 use Illuminate\Http\Request;
 
 class CertificationController extends Controller
@@ -21,7 +22,7 @@ class CertificationController extends Controller
             'issuer' => 'required|string|max:255',
             'icon' => 'nullable|string|max:10',
             'description' => 'nullable|string',
-            'credential_url' => 'nullable|url|max:500',
+            'credential_url' => ['nullable', 'string', 'max:500', new SafeHttpUrl],
             'issue_date' => 'nullable|string|max:100',
             'order' => 'nullable|integer',
         ]);
@@ -38,7 +39,7 @@ class CertificationController extends Controller
             'issuer' => 'required|string|max:255',
             'icon' => 'nullable|string|max:10',
             'description' => 'nullable|string',
-            'credential_url' => 'nullable|url|max:500',
+            'credential_url' => ['nullable', 'string', 'max:500', new SafeHttpUrl],
             'issue_date' => 'nullable|string|max:100',
             'order' => 'nullable|integer',
         ]);

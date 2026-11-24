@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Rules\SafeHttpUrl;
 use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
 class SettingController extends Controller
@@ -151,10 +153,10 @@ class SettingController extends Controller
             'hero_subtitle' => 'required|string',
             'about_text' => 'required|string',
             'skills' => 'nullable|string|max:1000',
-            'github_url' => 'nullable|url|max:255',
-            'linkedin_url' => 'nullable|url|max:255',
+            'github_url' => ['nullable', 'string', 'max:255', new SafeHttpUrl],
+            'linkedin_url' => ['nullable', 'string', 'max:255', new SafeHttpUrl],
             'email' => 'nullable|email|max:255',
-            'spline_embed_url' => 'nullable|url|max:500',
+            'spline_embed_url' => ['nullable', 'string', 'max:500', new SafeHttpUrl('spline.design', true)],
             'seo_keywords' => 'nullable|string|max:500',
             'seo_meta_desc' => 'nullable|string|max:500',
             'stat_years_experience' => 'nullable|string|max:50',
@@ -170,8 +172,27 @@ class SettingController extends Controller
         if ($request->hasFile('cv_file')) {
             $oldCv = Setting::get('cv_file_path');
             $file = $request->file('cv_file');
+
+            // Defense in depth: mimes:pdf already sniffs the MIME type, but we
+            // also require the PDF magic bytes before writing the file.
+            $handle = @fopen($file->getRealPath(), 'rb');
+            $signature = $handle ? (string) fread($handle, 5) : '';
+            if ($handle) {
+                fclose($handle);
+            }
+
+            if ($signature !== '%PDF-') {
+                throw ValidationException::withMessages([
+                    'cv_file' => 'Berkas CV harus berupa PDF yang valid (header %PDF- tidak ditemukan).',
+                ]);
+            }
+
             $filename = 'cv_' . Str::uuid() . '.pdf';
             $path = $file->storeAs('uploads/cv', $filename, 'public');
+
+            try {
+                @chmod(Storage::disk('public')->path($path), 0644);
+            } catch (\Throwable $e) {}
 
             try {
                 if (!app()->runningUnitTests()) {
@@ -180,6 +201,7 @@ class SettingController extends Controller
                         @mkdir($publicCvDir, 0755, true);
                     }
                     @copy($file->getRealPath(), $publicCvDir . '/' . $filename);
+                    @chmod($publicCvDir . '/' . $filename, 0644);
                 }
             } catch (\Throwable $e) {}
             

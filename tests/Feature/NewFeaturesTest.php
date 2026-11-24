@@ -10,6 +10,7 @@ use App\Models\Experience;
 use App\Models\Certification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Support\Honeypot;
 
 class NewFeaturesTest extends TestCase
 {
@@ -23,12 +24,12 @@ class NewFeaturesTest extends TestCase
 
     public function test_visitor_can_submit_contact_message(): void
     {
-        $response = $this->post(route('contact.send'), [
+        $response = $this->post(route('contact.send'), array_merge([
             'name' => 'Budi Santoso',
             'email' => 'budi@example.com',
             'subject' => 'Tawaran Proyek Mobile App',
             'message' => 'Halo Ady, saya tertarik untuk mendiskusikan pembuatan aplikasi mobile.',
-        ]);
+        ], Honeypot::fields(now()->subSeconds(5)->timestamp)));
 
         $response->assertRedirect();
         $response->assertSessionHas('contact_success');

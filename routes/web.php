@@ -29,8 +29,8 @@ Route::get('/portfolio', [HomeController::class, 'portfolio'])->name('portfolio.
 Route::get('/tools', [HomeController::class, 'tools'])->name('tools.index');
 Route::get('/tools/merge-pdf', [\App\Http\Controllers\Tools\ToolController::class, 'mergePdf'])->name('tools.merge-pdf');
 Route::get('/tools/compress-image', [\App\Http\Controllers\Tools\ToolController::class, 'compressImage'])->name('tools.compress-image');
-Route::get('/tools/{tool:slug}/launch', [HomeController::class, 'launchTool'])->name('tools.launch');
-Route::get('/download-cv', [HomeController::class, 'downloadCv'])->name('cv.download');
+Route::get('/tools/{tool:slug}/launch', [HomeController::class, 'launchTool'])->middleware('throttle:30,1')->name('tools.launch');
+Route::get('/download-cv', [HomeController::class, 'downloadCv'])->middleware('throttle:15,1')->name('cv.download');
 Route::get('/services', [HomeController::class, 'services'])->name('services.index');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::post('/contact/send', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.send');
@@ -50,7 +50,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('products', ProductController::class)->except(['show']);
     Route::resource('services', ServiceController::class)->except(['show']);
     Route::patch('services/{service}/toggle', [ServiceController::class, 'toggleStatus'])->name('services.toggle');
-    Route::resource('tools', ToolController::class);
+    Route::resource('tools', ToolController::class)->except(['show']);
     Route::resource('experiences', ExperienceController::class)->except(['create', 'edit', 'show']);
     Route::resource('certifications', CertificationController::class)->except(['create', 'edit', 'show']);
 
@@ -63,7 +63,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::middleware('backup.manage')->group(function () {
         Route::get('/backup/export', [BackupController::class, 'exportBackup'])->middleware('password.confirm')->name('backup.export');
         Route::post('/backup/preview', [BackupController::class, 'previewImport'])->name('backup.preview');
-        Route::post('/backup/import', [BackupController::class, 'importBackup'])->name('backup.import');
+        Route::post('/backup/import', [BackupController::class, 'importBackup'])->middleware('throttle:5,1')->name('backup.import');
     });
 
     // Settings & Hero Gallery Dedicated Routes
